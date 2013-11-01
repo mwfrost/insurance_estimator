@@ -1,6 +1,6 @@
 # Insurance Policy Comparison
 
-Given a family profile and the characteristics of several insurance plans, iterate across _n_ randomly generated years of health events and estimate the net cost to the household.
+Given a family profile and the characteristics of several insurance plans, iterate across _n_ randomly generated years of health events and estimate the net cost to the household. Hopefully a tool like this could allow households to choose their insurance plans with something approaching the degree of analytical clarity that insurance companies themselves enjoy. 
 
 To see the rendered source code and output, view the [output file `insurance_estimator.md`](https://github.com/mwfrost/insurance_estimator/blob/master/insurance_estimator.md)
 

@@ -25,11 +25,13 @@ policies <- rbind(
 )
 policies$policy.id <- row.names(policies)
 
+policies
+
 ```
 
 ## Declare family members
 
-Each family member has a name, a baseline cost for doctor's visits, a risk of incurring sickness-related expenses, and a risk of catastrophic indury or illness. 
+Each family member has a name, a baseline cost for doctor's visits, a risk of incurring sickness-related expenses, and a risk of catastrophic injury or illness. 
 
 The risk factors are probabilities passed to a binomial distribution. If the result is 1, a Poisson distribution is used to estimate costs. 
 
@@ -84,7 +86,7 @@ dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright , dxy$dy, 0)
 
 ```
 
-Plot the outcomes
+## Plot the outcomes
 
 ```{r plot.outcomes}
 ggplot(results) + geom_density(aes(x=fam.net.capped)) +

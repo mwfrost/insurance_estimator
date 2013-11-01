@@ -41,6 +41,19 @@ policies <- rbind(data.frame(policy.name = "2014 CIGNA Choice Fund with HSA",
     ind.deductible = 600, fam.deductible = 1200, copay.pct = 0.8, ind.oop.max = 2400, 
     fam.oop.max = 4800, premium = (166.67 * 2)))
 policies$policy.id <- row.names(policies)
+
+policies
+```
+
+```
+##                          policy.name ind.deductible fam.deductible
+## 1    2014 CIGNA Choice Fund with HSA           1500           3000
+## 2 2014 CIGNA OAP (PPO) Standard Plan            600           1200
+## 3     2013 CIGNA OAP (PPO) Gold Plan            600           1200
+##   copay.pct ind.oop.max fam.oop.max premium policy.id
+## 1       0.8        1500       12000   373.5         1
+## 2       0.8         600        4800   473.3         2
+## 3       0.8        2400        4800   333.3         3
 ```
 
 
@@ -77,13 +90,13 @@ subset(costs, cost.iteration == 1)
 
 ```
 ##          Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1    Parent A              1 Parent A     157.76         0        0
-## 501  Parent B              1 Parent B     144.29         0        0
-## 1001  Child C              1  Child C      82.23         0        0
-## 1501  Child D              1  Child D     132.55       600        0
-## 2001  Child E              1  Child E     133.71         0        0
-## 2501  Child F              1  Child F     156.33         0        0
-## 3001 Child CG              1 Child CG     131.00         0        0
+## 1    Parent A              1 Parent A     144.80         0        0
+## 501  Parent B              1 Parent B     201.90         0        0
+## 1001  Child C              1  Child C      88.66         0        0
+## 1501  Child D              1  Child D     158.96         0        0
+## 2001  Child E              1  Child E     150.41         0        0
+## 2501  Child F              1  Child F     107.53         0        0
+## 3001 Child CG              1 Child CG     140.61         0        0
 ```
 
 ```r
@@ -95,12 +108,12 @@ head(scenarios)
 
 ```
 ##       Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1 Parent A              1 Parent A      157.8         0        0
-## 2 Parent A              2 Parent A      509.3         0        0
-## 3 Parent A              3 Parent A      337.8       500        0
-## 4 Parent A              4 Parent A      235.0         0        0
-## 5 Parent A              5 Parent A      231.9       500        0
-## 6 Parent A              6 Parent A      279.9       500        0
+## 1 Parent A              1 Parent A      144.8         0        0
+## 2 Parent A              2 Parent A      466.0         0        0
+## 3 Parent A              3 Parent A      252.2         0        0
+## 4 Parent A              4 Parent A      250.9       900        0
+## 5 Parent A              5 Parent A      291.2       900        0
+## 6 Parent A              6 Parent A      236.2       900        0
 ##                       policy.name ind.deductible fam.deductible copay.pct
 ## 1 2014 CIGNA Choice Fund with HSA           1500           3000       0.8
 ## 2 2014 CIGNA Choice Fund with HSA           1500           3000       0.8
@@ -126,8 +139,8 @@ str(scenarios)
 ##  $ Name          : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ cost.iteration: int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ name          : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ visit.cost    : num  158 509 338 235 232 ...
-##  $ sick.cost     : num  0 0 500 0 500 500 500 0 0 0 ...
+##  $ visit.cost    : num  145 466 252 251 291 ...
+##  $ sick.cost     : num  0 0 0 900 900 900 0 0 0 900 ...
 ##  $ cat.cost      : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ policy.name   : Factor w/ 3 levels "2014 CIGNA Choice Fund with HSA",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ ind.deductible: num  1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 ...
@@ -150,26 +163,26 @@ head(results)
 
 ```
 ##                      policy.name cost.iteration fam.costs fam.deductible
-## 1 2013 CIGNA OAP (PPO) Gold Plan              1      1538           1200
-## 2 2013 CIGNA OAP (PPO) Gold Plan              2      4149           1200
-## 3 2013 CIGNA OAP (PPO) Gold Plan              3      3034           1200
-## 4 2013 CIGNA OAP (PPO) Gold Plan              4      4112           1200
-## 5 2013 CIGNA OAP (PPO) Gold Plan              5      3681           1200
-## 6 2013 CIGNA OAP (PPO) Gold Plan              6      3296           1200
+## 1 2013 CIGNA OAP (PPO) Gold Plan              1     992.9           1200
+## 2 2013 CIGNA OAP (PPO) Gold Plan              2    3760.3           1200
+## 3 2013 CIGNA OAP (PPO) Gold Plan              3    3928.6           1200
+## 4 2013 CIGNA OAP (PPO) Gold Plan              4    2928.1           1200
+## 5 2013 CIGNA OAP (PPO) Gold Plan              5    2790.1           1200
+## 6 2013 CIGNA OAP (PPO) Gold Plan              6    3669.9           1200
 ##   copay.pct premium fam.oop.max fam.sub.ded fam.post.ded fam.copay
-## 1       0.8   333.3        4800        1538        337.9     270.3
-## 2       0.8   333.3        4800        4149       2949.5    2359.6
-## 3       0.8   333.3        4800        3034       1833.8    1467.1
-## 4       0.8   333.3        4800        4112       2911.7    2329.3
-## 5       0.8   333.3        4800        3681       2480.6    1984.5
-## 6       0.8   333.3        4800        3296       2096.2    1676.9
+## 1       0.8   333.3        4800        1200            0         0
+## 2       0.8   333.3        4800        3760         2560      2048
+## 3       0.8   333.3        4800        3929         2729      2183
+## 4       0.8   333.3        4800        2928         1728      1382
+## 5       0.8   333.3        4800        2790         1590      1272
+## 6       0.8   333.3        4800        3670         2470      1976
 ##   annual.premium fam.net fam.net.max fam.net.capped
-## 1           4000    5808        8800           5808
-## 2           4000   10509        8800           8800
-## 3           4000    8501        8800           8501
-## 4           4000   10441        8800           8800
-## 5           4000    9665        8800           8800
-## 6           4000    8973        8800           8800
+## 1           4000    5200        8800           5200
+## 2           4000    9809        8800           8800
+## 3           4000   10112        8800           8800
+## 4           4000    8311        8800           8311
+## 5           4000    8062        8800           8062
+## 6           4000    9646        8800           8800
 ```
 
 
