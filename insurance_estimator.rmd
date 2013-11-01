@@ -87,8 +87,8 @@ ranges$premium <- ranges$premium * 12
 # Calculate the premium + deductible out-of-pocket baseline
 ranges$dedplusprem <- ranges$fam.deductible + ranges$premium 
 dummyranges <- ranges
-dummyranges$premium <- 0
 dummyranges$dedplusprem <- dummyranges$premium 
+dummyranges$premium <- 0
 ranges <- rbind(dummyranges, ranges)
 
 ggplot(results, aes(x=fam.net.capped)) +

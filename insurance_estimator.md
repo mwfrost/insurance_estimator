@@ -68,12 +68,12 @@ head(costs)
 
 ```
 ##       Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1 Parent A              1 Parent A      235.3         0        0
-## 2 Parent A              2 Parent A      483.2         0        0
-## 3 Parent A              3 Parent A      252.4       500        0
-## 4 Parent A              4 Parent A      240.0         0        0
-## 5 Parent A              5 Parent A      271.6       500        0
-## 6 Parent A              6 Parent A      229.4         0        0
+## 1 Parent A              1 Parent A      269.5         0        0
+## 2 Parent A              2 Parent A      479.3         0        0
+## 3 Parent A              3 Parent A      233.2         0        0
+## 4 Parent A              4 Parent A      305.6       300        0
+## 5 Parent A              5 Parent A      269.0         0        0
+## 6 Parent A              6 Parent A      247.8       300    13000
 ```
 
 ```r
@@ -82,13 +82,13 @@ subset(costs, cost.iteration == 1)
 
 ```
 ##          Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1    Parent A              1 Parent A      235.3         0        0
-## 501  Parent B              1 Parent B      274.7         0        0
-## 1001  Child C              1  Child C      231.8         0        0
-## 1501  Child D              1  Child D      243.9         0        0
-## 2001  Child E              1  Child E      305.0         0        0
-## 2501  Child F              1  Child F      239.6         0        0
-## 3001 Child CG              1 Child CG      242.8         0        0
+## 1    Parent A              1 Parent A      269.5         0        0
+## 501  Parent B              1 Parent B      240.3       600        0
+## 1001  Child C              1  Child C      299.1         0        0
+## 1501  Child D              1  Child D      244.5         0        0
+## 2001  Child E              1  Child E      231.0         0        0
+## 2501  Child F              1  Child F      257.3         0        0
+## 3001 Child CG              1 Child CG      309.8         0        0
 ```
 
 ```r
@@ -98,12 +98,12 @@ head(scenarios)
 
 ```
 ##       Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1 Parent A              1 Parent A      235.3         0        0
-## 2 Parent A              2 Parent A      483.2         0        0
-## 3 Parent A              3 Parent A      252.4       500        0
-## 4 Parent A              4 Parent A      240.0         0        0
-## 5 Parent A              5 Parent A      271.6       500        0
-## 6 Parent A              6 Parent A      229.4         0        0
+## 1 Parent A              1 Parent A      269.5         0        0
+## 2 Parent A              2 Parent A      479.3         0        0
+## 3 Parent A              3 Parent A      233.2         0        0
+## 4 Parent A              4 Parent A      305.6       300        0
+## 5 Parent A              5 Parent A      269.0         0        0
+## 6 Parent A              6 Parent A      247.8       300    13000
 ##                       policy.name ind.deductible fam.deductible copay.pct
 ## 1 2014 CIGNA Choice Fund with HSA           1500           3000       0.8
 ## 2 2014 CIGNA Choice Fund with HSA           1500           3000       0.8
@@ -129,9 +129,9 @@ str(scenarios)
 ##  $ Name          : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ cost.iteration: int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ name          : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ visit.cost    : num  235 483 252 240 272 ...
-##  $ sick.cost     : num  0 0 500 0 500 0 0 0 0 0 ...
-##  $ cat.cost      : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ visit.cost    : num  269 479 233 306 269 ...
+##  $ sick.cost     : num  0 0 0 300 0 300 300 0 0 0 ...
+##  $ cat.cost      : num  0 0 0 0 0 13000 0 0 13000 0 ...
 ##  $ policy.name   : Factor w/ 3 levels "2014 CIGNA Choice Fund with HSA",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ ind.deductible: num  1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 ...
 ##  $ fam.deductible: num  3000 3000 3000 3000 3000 3000 3000 3000 3000 3000 ...
@@ -148,27 +148,27 @@ subset(scenarios, cost.iteration == 1)
 
 ```
 ##           Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1     Parent A              1 Parent A      235.3         0        0
-## 501   Parent B              1 Parent B      274.7         0        0
-## 1001   Child C              1  Child C      231.8         0        0
-## 1501   Child D              1  Child D      243.9         0        0
-## 2001   Child E              1  Child E      305.0         0        0
-## 2501   Child F              1  Child F      239.6         0        0
-## 3001  Child CG              1 Child CG      242.8         0        0
-## 3501  Parent A              1 Parent A      235.3         0        0
-## 4001  Parent B              1 Parent B      274.7         0        0
-## 4501   Child C              1  Child C      231.8         0        0
-## 5001   Child D              1  Child D      243.9         0        0
-## 5501   Child E              1  Child E      305.0         0        0
-## 6001   Child F              1  Child F      239.6         0        0
-## 6501  Child CG              1 Child CG      242.8         0        0
-## 7001  Parent A              1 Parent A      235.3         0        0
-## 7501  Parent B              1 Parent B      274.7         0        0
-## 8001   Child C              1  Child C      231.8         0        0
-## 8501   Child D              1  Child D      243.9         0        0
-## 9001   Child E              1  Child E      305.0         0        0
-## 9501   Child F              1  Child F      239.6         0        0
-## 10001 Child CG              1 Child CG      242.8         0        0
+## 1     Parent A              1 Parent A      269.5         0        0
+## 501   Parent B              1 Parent B      240.3       600        0
+## 1001   Child C              1  Child C      299.1         0        0
+## 1501   Child D              1  Child D      244.5         0        0
+## 2001   Child E              1  Child E      231.0         0        0
+## 2501   Child F              1  Child F      257.3         0        0
+## 3001  Child CG              1 Child CG      309.8         0        0
+## 3501  Parent A              1 Parent A      269.5         0        0
+## 4001  Parent B              1 Parent B      240.3       600        0
+## 4501   Child C              1  Child C      299.1         0        0
+## 5001   Child D              1  Child D      244.5         0        0
+## 5501   Child E              1  Child E      231.0         0        0
+## 6001   Child F              1  Child F      257.3         0        0
+## 6501  Child CG              1 Child CG      309.8         0        0
+## 7001  Parent A              1 Parent A      269.5         0        0
+## 7501  Parent B              1 Parent B      240.3       600        0
+## 8001   Child C              1  Child C      299.1         0        0
+## 8501   Child D              1  Child D      244.5         0        0
+## 9001   Child E              1  Child E      231.0         0        0
+## 9501   Child F              1  Child F      257.3         0        0
+## 10001 Child CG              1 Child CG      309.8         0        0
 ##                              policy.name ind.deductible fam.deductible
 ## 1        2014 CIGNA Choice Fund with HSA           1500           3000
 ## 501      2014 CIGNA Choice Fund with HSA           1500           3000
@@ -222,26 +222,26 @@ head(results)
 
 ```
 ##                      policy.name cost.iteration fam.costs fam.deductible
-## 1 2013 CIGNA OAP (PPO) Gold Plan              1      1773           1200
-## 2 2013 CIGNA OAP (PPO) Gold Plan              2      4123           1200
-## 3 2013 CIGNA OAP (PPO) Gold Plan              3      3605           1200
-## 4 2013 CIGNA OAP (PPO) Gold Plan              4      2842           1200
-## 5 2013 CIGNA OAP (PPO) Gold Plan              5      4185           1200
-## 6 2013 CIGNA OAP (PPO) Gold Plan              6      2748           1200
+## 1 2013 CIGNA OAP (PPO) Gold Plan              1      2451           1200
+## 2 2013 CIGNA OAP (PPO) Gold Plan              2      3378           1200
+## 3 2013 CIGNA OAP (PPO) Gold Plan              3      2235           1200
+## 4 2013 CIGNA OAP (PPO) Gold Plan              4      3346           1200
+## 5 2013 CIGNA OAP (PPO) Gold Plan              5      2883           1200
+## 6 2013 CIGNA OAP (PPO) Gold Plan              6     24176           1200
 ##   copay.pct premium fam.oop.max fam.sub.ded fam.post.ded fam.copay
-## 1       0.8   333.3        4800        1773        573.2     458.5
-## 2       0.8   333.3        4800        4123       2923.1    2338.5
-## 3       0.8   333.3        4800        3605       2404.9    1924.0
-## 4       0.8   333.3        4800        2842       1641.8    1313.5
-## 5       0.8   333.3        4800        4185       2985.3    2388.2
-## 6       0.8   333.3        4800        2748       1548.1    1238.5
+## 1       0.8   333.3        4800        2451         1251    1001.2
+## 2       0.8   333.3        4800        3378         2178    1742.3
+## 3       0.8   333.3        4800        2235         1035     828.3
+## 4       0.8   333.3        4800        3346         2146    1716.5
+## 5       0.8   333.3        4800        2883         1683    1346.4
+## 6       0.8   333.3        4800       24176        22976   18380.5
 ##   annual.premium fam.net fam.net.max fam.net.capped
-## 1           4000    6232        8800           6232
-## 2           4000   10462        8800           8800
-## 3           4000    9529        8800           8800
-## 4           4000    8155        8800           8155
-## 5           4000   10574        8800           8800
-## 6           4000    7987        8800           7987
+## 1           4000    7453        8800           7453
+## 2           4000    9120        8800           8800
+## 3           4000    7064        8800           7064
+## 4           4000    9062        8800           8800
+## 5           4000    8229        8800           8229
+## 6           4000   46556        8800           8800
 ```
 
 
@@ -297,8 +297,8 @@ ranges$premium <- ranges$premium * 12
 # Calculate the premium + deductible out-of-pocket baseline
 ranges$dedplusprem <- ranges$fam.deductible + ranges$premium
 dummyranges <- ranges
-dummyranges$premium <- 0
 dummyranges$dedplusprem <- dummyranges$premium
+dummyranges$premium <- 0
 ranges <- rbind(dummyranges, ranges)
 
 ggplot(results, aes(x = fam.net.capped)) + geom_histogram(aes(y = ..density..), 
