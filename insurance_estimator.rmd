@@ -73,12 +73,12 @@ dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright , dxy$dy, 0)
 Plot the outcomes
 
 ```{r plot.outcomes}
-ggplot(results) + geom_density(aes(x=fam.net)) +
+ggplot(results) + geom_density(aes(x=fam.net.capped)) +
   geom_area(data=dxy,aes(x=dx,y=ytail ), fill="green",colour=NA,alpha=0.5) +
   geom_vline(aes(xintercept=fam.net.max),color='red') + 
   facet_wrap( ~ policy.name, ncol=1)
 
-ggplot(results) + geom_histogram(aes(x=fam.net), binwidth=100) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ policy.name, ncol=1)
+ggplot(results) + geom_histogram(aes(x=fam.net.capped), binwidth=100) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ policy.name, ncol=1)
 
 # combined density curve and probability histogram
 ranges <- policies
