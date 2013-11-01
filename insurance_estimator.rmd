@@ -9,7 +9,10 @@ source('func.r')
 ```
 
 
-Declare available policies:
+## Declare available policies
+
+Policy attributes include a name, the individual deductible, the family deductible, the copay percentage (as the share paid by the insurer), the individual out-of-pocket maximum, the family out-of-pocket maximum, and the monthly premium.
+
 
 ```{r policies}
 
@@ -24,11 +27,17 @@ policies$policy.id <- row.names(policies)
 
 ```
 
-Declare family members:
+## Declare family members
+
+Each family member has a name, a baseline cost for doctor's visits, a risk of incurring sickness-related expenses, and a risk of catastrophic indury or illness. 
+
+The risk factors are probabilities passed to a binomial distribution. If the result is 1, a Poisson distribution is used to estimate costs. 
+
+In the following sample family, Parent A visits the doctor less than Parent A, and the children are more likely to get sick. Everyone has a 1% chance of catastrophic sickness or injury.
 
 ```{r insured}
 insured <- rbind(
-    data.frame(Name='Parent A',  VisitBase=250,  SickRisk=0.1, CatRisk=0.01)
+    data.frame(Name='Parent A',  VisitBase=150,  SickRisk=0.1, CatRisk=0.01)
     ,
     data.frame(Name='Parent B' , VisitBase=500,  SickRisk=0.2, CatRisk=0.01)
     ,
@@ -45,30 +54,35 @@ insured <- rbind(
 ```
 
 
-Run a year with _n_ iterations:
+## Run _n_ iterations of the family's possible years with each policy
 
 ```{r func.yr}
 n <- 500
 costs <- yearcosts(insured, n)
-head(costs)
 subset(costs, cost.iteration == 1)
+# The `scenarios` are unique combinations of each policy, family member, and iteration year
 scenarios <- explode.scenarios(costs, policies)
 head(scenarios)
 str(scenarios)
-subset(scenarios, cost.iteration == 1)
+# subset(scenarios, cost.iteration == 1)
+
+# the calculate_family() function aggregates the scenarios to the family level
 results <- calculate.family(scenarios)
 head(results)
 ```
 
 
-Measure the probability densities of the results, by policy
+Measure the probability densities of the results, by policy. Assign some tail boundaries of interest for later graphing.
+
+
 ```{r densities}
+tail.limit.left <- 0.333
+tail.limit.right <- 0.666
 dxy <- ddply(results, .(policy.name), summarize, dx=density(fam.net.capped)$x, dy=density(fam.net.capped)$y )
-dxy <- ddply(dxy, .(policy.name), transform, qleft=quantile(dx, 0.333), qright=quantile(dx, 0.666))
+dxy <- ddply(dxy, .(policy.name), transform, qleft=quantile(dx, tail.limit.left), qright=quantile(dx, tail.limit.right))
 dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright , dxy$dy, 0)
 
 ```
-
 
 Plot the outcomes
 
@@ -80,7 +94,12 @@ ggplot(results) + geom_density(aes(x=fam.net.capped)) +
 
 ggplot(results) + geom_histogram(aes(x=fam.net.capped), binwidth=100) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ policy.name, ncol=1)
 
-# combined density curve and probability histogram
+```
+
+Create some range spans so the x axis on each graph can how much of the net costs are composed of premiums (orange box), deductible costs paid at 100% (yellow box), and post-deductible copays (the amount between the yellow box and the total cost).
+
+
+```{r ranges}
 ranges <- policies
 # annualize the monthly premium
 ranges$premium <- ranges$premium * 12
@@ -90,7 +109,11 @@ dummyranges <- ranges
 dummyranges$dedplusprem <- dummyranges$premium 
 dummyranges$premium <- 0
 ranges <- rbind(dummyranges, ranges)
+```
 
+Plot the ranges behind the distribution graphs.
+
+```{r combined plot}
 ggplot(results, aes(x=fam.net.capped)) +
   geom_histogram(aes(y = ..density..), binwidth=density(results$fam.net.capped)$bw) +
   geom_area(data=ranges, aes(x=premium , y=0.0015) , fill="orange", alpha=0.5) + 
@@ -101,7 +124,5 @@ ggplot(results, aes(x=fam.net.capped)) +
   facet_wrap( ~ policy.name, ncol=1) +
   scale_y_continuous(limits=c(0,0.0025)) +
   scale_x_continuous("Net family costs", limits=c(0, 30000))
-
-
 ```
 
