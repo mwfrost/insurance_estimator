@@ -12,7 +12,7 @@ yearcosts <- function(i, n){
       name = x$Name,
       visit.cost =  rnorm(n,  i$VisitBase, visit.sd ),
       sick.cost  =  rbinom(n, 1, i$SickRisk) * (rpois(1, 4 ) +1) * 100,
-      cat.cost   =  rbinom(n, 1, i$CatRisk ) * (rpois(1, 10) +1) * 100
+      cat.cost   =  rbinom(n, 1, i$CatRisk ) * (rpois(1, 10) +1) * 1000
     )
   }
   )
@@ -36,16 +36,26 @@ calculate.family <- function(i.c.p) {
                unique(i.c.p[,c('policy.name','fam.deductible','copay.pct', 'premium','fam.oop.max')]) ,
                by='policy.name'
                )
-  fam$fam.post.ded <-  ifelse( (fam$fam.costs - fam$fam.deductible) > 0, (fam$fam.costs - fam$fam.deductible), 0)
+  # Costs beneath the deductible are paid out of pocket
+  fam$fam.sub.ded <-  ifelse( fam$fam.deductible > fam$fam.costs, 
+                               fam$fam.deductible, 
+                               fam$fam.costs
+  )
+  # How much of the gross costs exceed the deductible?
+  fam$fam.post.ded <-  ifelse( fam$fam.costs > fam$fam.deductible, 
+                               fam$fam.costs - fam$fam.deductible, 
+                               0
+                               )
+  # Apply the copay percentage to the post-deductible share of costs
   fam$fam.copay <- fam$fam.post.ded * fam$copay.pct
+  
   fam$annual.premium <- fam$premium * 12
-  fam$fam.net <- fam$annual.premium + fam$fam.copay
+  # Net family cost is the premium + sub-deductible + post-deductible copays
+  fam$fam.net <- fam$annual.premium + fam$fam.sub.ded + fam$fam.copay
   # The functional ceiling is the sum of the premiums and the out-of-pocket maximum
   fam$fam.net.max <- fam$fam.oop.max + fam$annual.premium
   # Truncate the net costs at the functional ceiling 
   fam$fam.net.capped <- ifelse(fam$fam.net > fam$fam.net.max, fam$fam.net.max, fam$fam.net)
-  
-  # Pre-deductible costs are incurred at 100%
   
   fam
   

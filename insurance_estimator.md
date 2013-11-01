@@ -32,9 +32,9 @@ Declare available policies:
 
 policies <- rbind(data.frame(policy.name = "2014 CIGNA Choice Fund with HSA", 
     ind.deductible = 1500, fam.deductible = 3000, copay.pct = 0.8, ind.oop.max = 1500, 
-    fam.oop.max = 3000, premium = (186.75 * 2)), data.frame(policy.name = "2014 CIGNA OAP (PPO) Standard Plan", 
+    fam.oop.max = 12000, premium = (186.75 * 2)), data.frame(policy.name = "2014 CIGNA OAP (PPO) Standard Plan", 
     ind.deductible = 600, fam.deductible = 1200, copay.pct = 0.8, ind.oop.max = 600, 
-    fam.oop.max = 1200, premium = (236.67 * 2)), data.frame(policy.name = "2013 CIGNA OAP (PPO) Gold Plan", 
+    fam.oop.max = 4800, premium = (236.67 * 2)), data.frame(policy.name = "2013 CIGNA OAP (PPO) Gold Plan", 
     ind.deductible = 600, fam.deductible = 1200, copay.pct = 0.8, ind.oop.max = 2400, 
     fam.oop.max = 4800, premium = (166.67 * 2)))
 policies$policy.id <- row.names(policies)
@@ -57,23 +57,23 @@ insured <- rbind(data.frame(Name = "Parent A", VisitBase = 250, SickRisk = 0.1,
 
 
 
-Run a year with 500 iterations:
+Run a year with _n_ iterations:
 
 
 ```r
-
-costs <- yearcosts(insured, 500)
+n <- 500
+costs <- yearcosts(insured, n)
 head(costs)
 ```
 
 ```
 ##       Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1 Parent A              1 Parent A      230.4         0        0
-## 2 Parent A              2 Parent A      523.2         0        0
-## 3 Parent A              3 Parent A      220.2       400        0
-## 4 Parent A              4 Parent A      220.1       400        0
-## 5 Parent A              5 Parent A      260.3         0        0
-## 6 Parent A              6 Parent A      221.7         0        0
+## 1 Parent A              1 Parent A      215.6         0        0
+## 2 Parent A              2 Parent A      490.2         0        0
+## 3 Parent A              3 Parent A      225.9         0        0
+## 4 Parent A              4 Parent A      257.2       300    12000
+## 5 Parent A              5 Parent A      262.1         0        0
+## 6 Parent A              6 Parent A      180.9       300        0
 ```
 
 ```r
@@ -82,13 +82,13 @@ subset(costs, cost.iteration == 1)
 
 ```
 ##          Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1    Parent A              1 Parent A      230.4         0        0
-## 501  Parent B              1 Parent B      214.9         0        0
-## 1001  Child C              1  Child C      254.9         0        0
-## 1501  Child D              1  Child D      259.9         0        0
-## 2001  Child E              1  Child E      293.5         0        0
-## 2501  Child F              1  Child F      226.4         0        0
-## 3001 Child CG              1 Child CG      312.6         0        0
+## 1    Parent A              1 Parent A      215.6         0        0
+## 501  Parent B              1 Parent B      298.8       300        0
+## 1001  Child C              1  Child C      243.5         0        0
+## 1501  Child D              1  Child D      249.3         0        0
+## 2001  Child E              1  Child E      257.9         0        0
+## 2501  Child F              1  Child F      262.0         0        0
+## 3001 Child CG              1 Child CG      280.3         0        0
 ```
 
 ```r
@@ -98,12 +98,12 @@ head(scenarios)
 
 ```
 ##       Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1 Parent A              1 Parent A      230.4         0        0
-## 2 Parent A              2 Parent A      523.2         0        0
-## 3 Parent A              3 Parent A      220.2       400        0
-## 4 Parent A              4 Parent A      220.1       400        0
-## 5 Parent A              5 Parent A      260.3         0        0
-## 6 Parent A              6 Parent A      221.7         0        0
+## 1 Parent A              1 Parent A      215.6         0        0
+## 2 Parent A              2 Parent A      490.2         0        0
+## 3 Parent A              3 Parent A      225.9         0        0
+## 4 Parent A              4 Parent A      257.2       300    12000
+## 5 Parent A              5 Parent A      262.1         0        0
+## 6 Parent A              6 Parent A      180.9       300        0
 ##                       policy.name ind.deductible fam.deductible copay.pct
 ## 1 2014 CIGNA Choice Fund with HSA           1500           3000       0.8
 ## 2 2014 CIGNA Choice Fund with HSA           1500           3000       0.8
@@ -112,12 +112,12 @@ head(scenarios)
 ## 5 2014 CIGNA Choice Fund with HSA           1500           3000       0.8
 ## 6 2014 CIGNA Choice Fund with HSA           1500           3000       0.8
 ##   ind.oop.max fam.oop.max premium policy.id
-## 1        1500        3000   373.5         1
-## 2        1500        3000   373.5         1
-## 3        1500        3000   373.5         1
-## 4        1500        3000   373.5         1
-## 5        1500        3000   373.5         1
-## 6        1500        3000   373.5         1
+## 1        1500       12000   373.5         1
+## 2        1500       12000   373.5         1
+## 3        1500       12000   373.5         1
+## 4        1500       12000   373.5         1
+## 5        1500       12000   373.5         1
+## 6        1500       12000   373.5         1
 ```
 
 ```r
@@ -129,15 +129,15 @@ str(scenarios)
 ##  $ Name          : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ cost.iteration: int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ name          : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ visit.cost    : num  230 523 220 220 260 ...
-##  $ sick.cost     : num  0 0 400 400 0 0 0 0 400 0 ...
-##  $ cat.cost      : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ visit.cost    : num  216 490 226 257 262 ...
+##  $ sick.cost     : num  0 0 0 300 0 300 300 0 0 300 ...
+##  $ cat.cost      : num  0 0 0 12000 0 0 0 0 0 0 ...
 ##  $ policy.name   : Factor w/ 3 levels "2014 CIGNA Choice Fund with HSA",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ ind.deductible: num  1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 ...
 ##  $ fam.deductible: num  3000 3000 3000 3000 3000 3000 3000 3000 3000 3000 ...
 ##  $ copay.pct     : num  0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 ...
 ##  $ ind.oop.max   : num  1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 ...
-##  $ fam.oop.max   : num  3000 3000 3000 3000 3000 3000 3000 3000 3000 3000 ...
+##  $ fam.oop.max   : num  12000 12000 12000 12000 12000 12000 12000 12000 12000 12000 ...
 ##  $ premium       : num  374 374 374 374 374 ...
 ##  $ policy.id     : chr  "1" "1" "1" "1" ...
 ```
@@ -148,27 +148,27 @@ subset(scenarios, cost.iteration == 1)
 
 ```
 ##           Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1     Parent A              1 Parent A      230.4         0        0
-## 501   Parent B              1 Parent B      214.9         0        0
-## 1001   Child C              1  Child C      254.9         0        0
-## 1501   Child D              1  Child D      259.9         0        0
-## 2001   Child E              1  Child E      293.5         0        0
-## 2501   Child F              1  Child F      226.4         0        0
-## 3001  Child CG              1 Child CG      312.6         0        0
-## 3501  Parent A              1 Parent A      230.4         0        0
-## 4001  Parent B              1 Parent B      214.9         0        0
-## 4501   Child C              1  Child C      254.9         0        0
-## 5001   Child D              1  Child D      259.9         0        0
-## 5501   Child E              1  Child E      293.5         0        0
-## 6001   Child F              1  Child F      226.4         0        0
-## 6501  Child CG              1 Child CG      312.6         0        0
-## 7001  Parent A              1 Parent A      230.4         0        0
-## 7501  Parent B              1 Parent B      214.9         0        0
-## 8001   Child C              1  Child C      254.9         0        0
-## 8501   Child D              1  Child D      259.9         0        0
-## 9001   Child E              1  Child E      293.5         0        0
-## 9501   Child F              1  Child F      226.4         0        0
-## 10001 Child CG              1 Child CG      312.6         0        0
+## 1     Parent A              1 Parent A      215.6         0        0
+## 501   Parent B              1 Parent B      298.8       300        0
+## 1001   Child C              1  Child C      243.5         0        0
+## 1501   Child D              1  Child D      249.3         0        0
+## 2001   Child E              1  Child E      257.9         0        0
+## 2501   Child F              1  Child F      262.0         0        0
+## 3001  Child CG              1 Child CG      280.3         0        0
+## 3501  Parent A              1 Parent A      215.6         0        0
+## 4001  Parent B              1 Parent B      298.8       300        0
+## 4501   Child C              1  Child C      243.5         0        0
+## 5001   Child D              1  Child D      249.3         0        0
+## 5501   Child E              1  Child E      257.9         0        0
+## 6001   Child F              1  Child F      262.0         0        0
+## 6501  Child CG              1 Child CG      280.3         0        0
+## 7001  Parent A              1 Parent A      215.6         0        0
+## 7501  Parent B              1 Parent B      298.8       300        0
+## 8001   Child C              1  Child C      243.5         0        0
+## 8501   Child D              1  Child D      249.3         0        0
+## 9001   Child E              1  Child E      257.9         0        0
+## 9501   Child F              1  Child F      262.0         0        0
+## 10001 Child CG              1 Child CG      280.3         0        0
 ##                              policy.name ind.deductible fam.deductible
 ## 1        2014 CIGNA Choice Fund with HSA           1500           3000
 ## 501      2014 CIGNA Choice Fund with HSA           1500           3000
@@ -192,20 +192,20 @@ subset(scenarios, cost.iteration == 1)
 ## 9501      2013 CIGNA OAP (PPO) Gold Plan            600           1200
 ## 10001     2013 CIGNA OAP (PPO) Gold Plan            600           1200
 ##       copay.pct ind.oop.max fam.oop.max premium policy.id
-## 1           0.8        1500        3000   373.5         1
-## 501         0.8        1500        3000   373.5         1
-## 1001        0.8        1500        3000   373.5         1
-## 1501        0.8        1500        3000   373.5         1
-## 2001        0.8        1500        3000   373.5         1
-## 2501        0.8        1500        3000   373.5         1
-## 3001        0.8        1500        3000   373.5         1
-## 3501        0.8         600        1200   473.3         2
-## 4001        0.8         600        1200   473.3         2
-## 4501        0.8         600        1200   473.3         2
-## 5001        0.8         600        1200   473.3         2
-## 5501        0.8         600        1200   473.3         2
-## 6001        0.8         600        1200   473.3         2
-## 6501        0.8         600        1200   473.3         2
+## 1           0.8        1500       12000   373.5         1
+## 501         0.8        1500       12000   373.5         1
+## 1001        0.8        1500       12000   373.5         1
+## 1501        0.8        1500       12000   373.5         1
+## 2001        0.8        1500       12000   373.5         1
+## 2501        0.8        1500       12000   373.5         1
+## 3001        0.8        1500       12000   373.5         1
+## 3501        0.8         600        4800   473.3         2
+## 4001        0.8         600        4800   473.3         2
+## 4501        0.8         600        4800   473.3         2
+## 5001        0.8         600        4800   473.3         2
+## 5501        0.8         600        4800   473.3         2
+## 6001        0.8         600        4800   473.3         2
+## 6501        0.8         600        4800   473.3         2
 ## 7001        0.8        2400        4800   333.3         3
 ## 7501        0.8        2400        4800   333.3         3
 ## 8001        0.8        2400        4800   333.3         3
@@ -222,34 +222,58 @@ head(results)
 
 ```
 ##                      policy.name cost.iteration fam.costs fam.deductible
-## 1 2013 CIGNA OAP (PPO) Gold Plan              1      1793           1200
-## 2 2013 CIGNA OAP (PPO) Gold Plan              2      5847           1200
-## 3 2013 CIGNA OAP (PPO) Gold Plan              3      4323           1200
-## 4 2013 CIGNA OAP (PPO) Gold Plan              4      3685           1200
-## 5 2013 CIGNA OAP (PPO) Gold Plan              5      2553           1200
-## 6 2013 CIGNA OAP (PPO) Gold Plan              6      2861           1200
-##   copay.pct premium fam.oop.max fam.post.ded fam.copay annual.premium
-## 1       0.8   333.3        4800        592.5       474           4000
-## 2       0.8   333.3        4800       4647.3      3718           4000
-## 3       0.8   333.3        4800       3122.5      2498           4000
-## 4       0.8   333.3        4800       2484.7      1988           4000
-## 5       0.8   333.3        4800       1353.1      1082           4000
-## 6       0.8   333.3        4800       1660.5      1328           4000
-##   fam.net fam.net.max fam.net.capped
-## 1    4474        8800           4474
-## 2    7718        8800           7718
-## 3    6498        8800           6498
-## 4    5988        8800           5988
-## 5    5083        8800           5083
-## 6    5329        8800           5329
+## 1 2013 CIGNA OAP (PPO) Gold Plan              1      2107           1200
+## 2 2013 CIGNA OAP (PPO) Gold Plan              2      4026           1200
+## 3 2013 CIGNA OAP (PPO) Gold Plan              3      2660           1200
+## 4 2013 CIGNA OAP (PPO) Gold Plan              4     15213           1200
+## 5 2013 CIGNA OAP (PPO) Gold Plan              5      2139           1200
+## 6 2013 CIGNA OAP (PPO) Gold Plan              6      3013           1200
+##   copay.pct premium fam.oop.max fam.sub.ded fam.post.ded fam.copay
+## 1       0.8   333.3        4800        2107        907.3     725.8
+## 2       0.8   333.3        4800        4026       2826.4    2261.1
+## 3       0.8   333.3        4800        2660       1459.7    1167.8
+## 4       0.8   333.3        4800       15213      14013.0   11210.4
+## 5       0.8   333.3        4800        2139        939.4     751.5
+## 6       0.8   333.3        4800        3013       1813.2    1450.5
+##   annual.premium fam.net fam.net.max fam.net.capped
+## 1           4000    6833        8800           6833
+## 2           4000   10288        8800           8800
+## 3           4000    7828        8800           7828
+## 4           4000   30423        8800           8800
+## 5           4000    6891        8800           6891
+## 6           4000    8464        8800           8464
 ```
+
+
+
+Measure the probability densities of the results, by policy
+
+```r
+dxy <- ddply(results, .(policy.name), summarize, dx = density(fam.net.capped)$x, 
+    dy = density(fam.net.capped)$y)
+dxy <- ddply(dxy, .(policy.name), transform, qleft = quantile(dx, 0.333), qright = quantile(dx, 
+    0.666))
+```
+
+```
+## Warning: row names were found from a short variable and have been
+## discarded Warning: row names were found from a short variable and have
+## been discarded Warning: row names were found from a short variable and
+## have been discarded
+```
+
+```r
+dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright, dxy$dy, 0)
+```
+
 
 
 Plot the outcomes
 
 
 ```r
-ggplot(results) + geom_density(aes(x = fam.net)) + geom_vline(aes(xintercept = fam.net.max), 
+ggplot(results) + geom_density(aes(x = fam.net)) + geom_area(data = dxy, aes(x = dx, 
+    y = ytail), fill = "green", colour = NA, alpha = 0.5) + geom_vline(aes(xintercept = fam.net.max), 
     color = "red") + facet_wrap(~policy.name, ncol = 1)
 ```
 
@@ -257,11 +281,45 @@ ggplot(results) + geom_density(aes(x = fam.net)) + geom_vline(aes(xintercept = f
 
 ```r
 
-ggplot(results) + geom_histogram(aes(x = fam.net.capped), binwidth = 100) + 
-    geom_vline(aes(xintercept = fam.net.max), color = "red") + facet_wrap(~policy.name, 
-    ncol = 1)
+ggplot(results) + geom_histogram(aes(x = fam.net), binwidth = 100) + geom_vline(aes(xintercept = fam.net.max), 
+    color = "red") + facet_wrap(~policy.name, ncol = 1)
 ```
 
 ![plot of chunk plot.outcomes](figure/plot_outcomes2.png) 
+
+```r
+
+# combined density curve and probability histogram
+ranges <- policies
+# annualize the monthly premium
+ranges$premium <- ranges$premium * 12
+# Calculate the premium + deductible out-of-pocket baseline
+ranges$dedplusprem <- ranges$fam.deductible + ranges$premium
+dummyranges <- ranges
+dummyranges$premium <- 0
+dummyranges$dedplusprem <- dummyranges$premium
+ranges <- rbind(dummyranges, ranges)
+
+ggplot(results, aes(x = fam.net.capped)) + geom_histogram(aes(y = ..density..), 
+    binwidth = density(results$fam.net.capped)$bw) + geom_area(data = ranges, 
+    aes(x = premium, y = 0.0015), fill = "orange", alpha = 0.5) + geom_area(data = ranges, 
+    aes(x = dedplusprem, y = 0.0015), fill = "yellow", alpha = 0.5) + geom_area(data = dxy, 
+    aes(x = dx, y = ytail), fill = "green", colour = NA, alpha = 0.5) + geom_vline(aes(xintercept = fam.net.max), 
+    color = "red") + geom_density(color = "blue") + facet_wrap(~policy.name, 
+    ncol = 1) + scale_y_continuous(limits = c(0, 0.0025)) + scale_x_continuous("Net family costs", 
+    limits = c(0, 30000))
+```
+
+```
+## Warning: position_stack requires constant width: output may be incorrect
+## Warning: position_stack requires constant width: output may be incorrect
+## Warning: position_stack requires constant width: output may be incorrect
+```
+
+![plot of chunk plot.outcomes](figure/plot_outcomes3.png) 
+
+```r
+
+```
 
 

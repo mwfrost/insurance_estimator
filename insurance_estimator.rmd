@@ -14,9 +14,9 @@ Declare available policies:
 ```{r policies}
 
 policies <- rbind(
-    data.frame(policy.name='2014 CIGNA Choice Fund with HSA' , ind.deductible=1500, fam.deductible=3000, copay.pct=.80, ind.oop.max=1500, fam.oop.max=3000, premium=(186.75*2))
+    data.frame(policy.name='2014 CIGNA Choice Fund with HSA' , ind.deductible=1500, fam.deductible=3000, copay.pct=.80, ind.oop.max=1500, fam.oop.max=12000, premium=(186.75*2))
 ,
-    data.frame(policy.name='2014 CIGNA OAP (PPO) Standard Plan' , ind.deductible=600, fam.deductible=1200, copay.pct=.80, ind.oop.max=600, fam.oop.max=1200, premium=(236.67*2))
+    data.frame(policy.name='2014 CIGNA OAP (PPO) Standard Plan' , ind.deductible=600, fam.deductible=1200, copay.pct=.80, ind.oop.max=600, fam.oop.max=4800, premium=(236.67*2))
 ,
     data.frame(policy.name='2013 CIGNA OAP (PPO) Gold Plan' , ind.deductible=600, fam.deductible=1200, copay.pct=.80, ind.oop.max=2400, fam.oop.max=4800, premium=(166.67*2))
 )
@@ -45,11 +45,11 @@ insured <- rbind(
 ```
 
 
-Run a year with 500 iterations:
+Run a year with _n_ iterations:
 
 ```{r func.yr}
-
-costs <- yearcosts(insured, 500)
+n <- 500
+costs <- yearcosts(insured, n)
 head(costs)
 subset(costs, cost.iteration == 1)
 scenarios <- explode.scenarios(costs, policies)
@@ -60,12 +60,48 @@ results <- calculate.family(scenarios)
 head(results)
 ```
 
+
+Measure the probability densities of the results, by policy
+```{r densities}
+dxy <- ddply(results, .(policy.name), summarize, dx=density(fam.net.capped)$x, dy=density(fam.net.capped)$y )
+dxy <- ddply(dxy, .(policy.name), transform, qleft=quantile(dx, 0.333), qright=quantile(dx, 0.666))
+dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright , dxy$dy, 0)
+
+```
+
+
 Plot the outcomes
 
 ```{r plot.outcomes}
-ggplot(results) + geom_density(aes(x=fam.net)) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ policy.name, ncol=1)
+ggplot(results) + geom_density(aes(x=fam.net)) +
+  geom_area(data=dxy,aes(x=dx,y=ytail ), fill="green",colour=NA,alpha=0.5) +
+  geom_vline(aes(xintercept=fam.net.max),color='red') + 
+  facet_wrap( ~ policy.name, ncol=1)
 
-ggplot(results) + geom_histogram(aes(x=fam.net.capped), binwidth=100) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ policy.name, ncol=1)
+ggplot(results) + geom_histogram(aes(x=fam.net), binwidth=100) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ policy.name, ncol=1)
+
+# combined density curve and probability histogram
+ranges <- policies
+# annualize the monthly premium
+ranges$premium <- ranges$premium * 12
+# Calculate the premium + deductible out-of-pocket baseline
+ranges$dedplusprem <- ranges$fam.deductible + ranges$premium 
+dummyranges <- ranges
+dummyranges$premium <- 0
+dummyranges$dedplusprem <- dummyranges$premium 
+ranges <- rbind(dummyranges, ranges)
+
+ggplot(results, aes(x=fam.net.capped)) +
+  geom_histogram(aes(y = ..density..), binwidth=density(results$fam.net.capped)$bw) +
+  geom_area(data=ranges, aes(x=premium , y=0.0015) , fill="orange", alpha=0.5) + 
+  geom_area(data=ranges, aes(x=dedplusprem, y=0.0015) , fill="yellow", alpha=0.5) +
+  geom_area(data=dxy,aes(x=dx,y=ytail ), fill="green",colour=NA,alpha=0.5) +
+  geom_vline(aes(xintercept=fam.net.max),color='red') +
+  geom_density(color="blue") +
+  facet_wrap( ~ policy.name, ncol=1) +
+  scale_y_continuous(limits=c(0,0.0025)) +
+  scale_x_continuous("Net family costs", limits=c(0, 30000))
+
 
 ```
 
