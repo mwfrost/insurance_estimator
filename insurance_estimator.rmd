@@ -1,0 +1,71 @@
+Insurance Cost Estimator
+========================================================
+
+```{r setup}
+require(knitr)
+require(plyr)
+require(ggplot2)
+source('func.r')
+```
+
+
+Declare available policies:
+
+```{r policies}
+
+policies <- rbind(
+    data.frame(policy.name='2014 CIGNA Choice Fund with HSA' , ind.deductible=1500, fam.deductible=3000, copay.pct=.80, ind.oop.max=1500, fam.oop.max=3000, premium=(186.75*2))
+,
+    data.frame(policy.name='2014 CIGNA OAP (PPO) Standard Plan' , ind.deductible=600, fam.deductible=1200, copay.pct=.80, ind.oop.max=600, fam.oop.max=1200, premium=(236.67*2))
+,
+    data.frame(policy.name='2013 CIGNA OAP (PPO) Gold Plan' , ind.deductible=600, fam.deductible=1200, copay.pct=.80, ind.oop.max=2400, fam.oop.max=4800, premium=(166.67*2))
+)
+policies$policy.id <- row.names(policies)
+
+```
+
+Declare family members:
+
+```{r insured}
+insured <- rbind(
+    data.frame(Name='Parent A',  VisitBase=250,  SickRisk=0.1, CatRisk=0.01)
+    ,
+    data.frame(Name='Parent B' , VisitBase=500,  SickRisk=0.2, CatRisk=0.01)
+    ,
+    data.frame(Name='Child C' ,  VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    ,
+    data.frame(Name='Child D' ,  VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    ,
+    data.frame(Name='Child E' ,  VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+      ,
+    data.frame(Name='Child F' ,  VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+        ,
+    data.frame(Name='Child CG' ,  VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+)
+```
+
+
+Run a year with 500 iterations:
+
+```{r func.yr}
+
+costs <- yearcosts(insured, 500)
+head(costs)
+subset(costs, cost.iteration == 1)
+scenarios <- explode.scenarios(costs, policies)
+head(scenarios)
+str(scenarios)
+subset(scenarios, cost.iteration == 1)
+results <- calculate.family(scenarios)
+head(results)
+```
+
+Plot the outcomes
+
+```{r plot.outcomes}
+ggplot(results) + geom_density(aes(x=fam.net)) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ policy.name, ncol=1)
+
+ggplot(results) + geom_histogram(aes(x=fam.net.capped), binwidth=100) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ policy.name, ncol=1)
+
+```
+
