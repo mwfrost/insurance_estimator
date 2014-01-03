@@ -26,28 +26,32 @@ explode.scenarios <- function(c, p){
   policy.costs
 }
 
-calculate.family <- function(i.c.p) {
-  fam <- ddply(i.c.p, .(policy.name, cost.iteration) , function(x) {c(
+
+calculate.family <- function(i.c.p, p) {
+  fam <- ddply(i.c.p, .(plan.id, cost.iteration) , function(x) {c(
           fam.costs = sum(x$visit.cost) + sum(x$sick.cost) +  sum(x$cat.cost)
           )
         }
         )
   fam <- merge(fam, 
-               unique(i.c.p[,c('policy.name','fam.deductible','copay.pct', 'premium','fam.oop.max')]) ,
-               by='policy.name'
+               plans ,
+               by='plan.id'
                )
+  
   # Costs beneath the deductible are paid out of pocket
-  fam$fam.sub.ded <-  ifelse( fam$fam.deductible > fam$fam.costs, 
-                               fam$fam.deductible, 
+  fam$fam.sub.ded <-  ifelse( fam$med.ded.fam > fam$fam.costs, 
+                               fam$med.ded.fam, 
                                fam$fam.costs
   )
+  print(summary(fam$fam.sub.ded))
+  
   # How much of the gross costs exceed the deductible?
-  fam$fam.post.ded <-  ifelse( fam$fam.costs > fam$fam.deductible, 
-                               fam$fam.costs - fam$fam.deductible, 
+  fam$fam.post.ded <-  ifelse( fam$fam.costs > fam$med.ded.fam, 
+                               fam$fam.costs - fam$med.ded.fam, 
                                0
                                )
-  # Apply the copay percentage to the post-deductible share of costs
-  fam$fam.copay <- fam$fam.post.ded * fam$copay.pct
+  # Apply the coinsurance percentage to the post-deductible share of costs
+  fam$fam.copay <- fam$fam.post.ded * fam$pcp.coinsurance
   
   fam$annual.premium <- fam$premium * 12
   # Net family cost is the premium + sub-deductible + post-deductible copays
