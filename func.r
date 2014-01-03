@@ -43,7 +43,7 @@ calculate.family <- function(i.c.p, p) {
                                fam$med.ded.fam, 
                                fam$fam.costs
   )
-  print(summary(fam$fam.sub.ded))
+  #print(summary(fam$fam.sub.ded))
   
   # How much of the gross costs exceed the deductible?
   fam$fam.post.ded <-  ifelse( fam$fam.costs > fam$med.ded.fam, 

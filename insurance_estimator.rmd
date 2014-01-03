@@ -13,6 +13,7 @@ require(scales)
 # require(RSocrata)
 
 source('func.r')
+opts_chunk$set(warning = FALSE)
 
 ```
 
@@ -74,7 +75,7 @@ names(policies) <- rename.list$new.name
 
 # Some of the columns containing dollar signs need to become numeric
 # There are tons of columns that won't convert directly
-names(policies)[which(apply(policies, 2, function(x) any(grepl("\\$", x))))]
+# names(policies)[which(apply(policies, 2, function(x) any(grepl("\\$", x))))]
 
 # The dollar-only columns have to be individually selected
 dollar.cols <- names(policies)[grep('\\.ded\\.|\\.oop\\.|premium\\.child|prem\\.ind|prem\\.cpl', names(policies) )]
@@ -110,8 +111,6 @@ coinsurance[is.na(coinsurance)] <- 0
 names(copays) <- gsub('share','copay',names(copays))
 names(coinsurance) <- gsub('share','coinsurance',names(coinsurance))
 
-cbind(copays, coinsurance)
-
 policies <- cbind(
             policies,
             copays, 
@@ -142,6 +141,8 @@ Each family member has a name, an age, a baseline cost for doctor's visits, a ri
 The risk factors are probabilities passed to a binomial distribution. If the result is 1, a Poisson distribution is used to estimate costs. 
 
 In the following sample family, Parent A visits the doctor less than Parent A, and the children are more likely to get sick. Everyone has a 1% chance of catastrophic sickness or injury.
+
+TODO: all the risk factors should correspond to the plans' different deductible, copay, and coinsurance attributes.
 
 ```{r insured}
 insured <- rbind(
@@ -249,18 +250,7 @@ dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright , dxy$dy, 0)
 
 ## Plot the outcomes
 
-```{r plot.outcomes}
-ggplot(results) + geom_density(aes(x=fam.net.capped)) +
-  geom_area(data=dxy,aes(x=dx,y=ytail ), fill="green",colour=NA,alpha=0.5) +
-  geom_vline(aes(xintercept=fam.net.max),color='red') + 
-  facet_wrap( ~ plan.name, ncol=1)
-
-ggplot(results) + geom_histogram(aes(x=fam.net.capped), binwidth=100) +geom_vline(aes(xintercept=fam.net.max),color='red')+ facet_wrap( ~ plan.name, ncol=1)
-
-```
-
 Create some range spans so the x axis on each graph can show how much of the net costs are composed of premiums (orange box), deductible costs paid at 100% (yellow box), and post-deductible copays (the amount between the yellow box and the total cost).
-
 
 ```{r ranges}
 ranges <- merge(plans, fam.prems)
@@ -289,6 +279,18 @@ p.dist <- ggplot(results, aes(x=fam.net.capped)) +
           scale_x_continuous("Net family costs", limits=c(0, 30000), labels = dollar)
 
 ggsave(filename='distribution.png',width=6,height=36)
+
+```
+
+<img src="distribution.png" alt="Distribution curves" style="width: 200px;"/>
+
+### Five-Number Summaries instead of graphs
+
+```{r }
+
+cost.summary <- ddply(results, .(plan.id, plan.name), function(x) summary(x$fam.net.capped))
+cost.summary <- arrange(cost.summary, Median)
+cost.summary
 
 ```
 

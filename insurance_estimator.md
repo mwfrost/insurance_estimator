@@ -69,6 +69,7 @@ require(scales)
 # require(RSocrata)
 
 source("func.r")
+opts_chunk$set(warning = FALSE)
 ```
 
 
@@ -276,102 +277,8 @@ names(policies) <- rename.list$new.name
 
 # Some of the columns containing dollar signs need to become numeric There
 # are tons of columns that won't convert directly
-names(policies)[which(apply(policies, 2, function(x) any(grepl("\\$", x))))]
-```
-
-```
-##  [1] "plan.name"                                          
-##  [2] "premium.child"                                      
-##  [3] "prem.ind.21"                                        
-##  [4] "prem.ind.27"                                        
-##  [5] "prem.ind.30"                                        
-##  [6] "prem.ind.40"                                        
-##  [7] "prem.ind.50"                                        
-##  [8] "prem.ind.60"                                        
-##  [9] "prem.cpl.21"                                        
-## [10] "prem.cpl.30"                                        
-## [11] "prem.cpl.40"                                        
-## [12] "prem.cpl.50"                                        
-## [13] "prem.cpl.60"                                        
-## [14] "couple.1.child.age.21"                              
-## [15] "couple.1.child.age.30"                              
-## [16] "couple.1.child.age.40"                              
-## [17] "couple.1.child.age.50"                              
-## [18] "couple.2.children.age.21"                           
-## [19] "couple.2.children.age.30"                           
-## [20] "couple.2.children.age.40"                           
-## [21] "couple.2.children.age.50"                           
-## [22] "couple.3.or.more.children.age.21"                   
-## [23] "couple.3.or.more.children.age.30"                   
-## [24] "couple.3.or.more.children.age.40"                   
-## [25] "couple.3.or.more.children.age.50"                   
-## [26] "individual.1.child.age.21"                          
-## [27] "individual.1.child.age.30"                          
-## [28] "individual.1.child.age.40"                          
-## [29] "individual.1.child.age.50"                          
-## [30] "individual.2.children.age.21"                       
-## [31] "individual.2.children.age.30"                       
-## [32] "individual.2.children.age.40"                       
-## [33] "individual.2.children.age.50"                       
-## [34] "individual.3.or.more.children.age.21"               
-## [35] "individual.3.or.more.children.age.30"               
-## [36] "individual.3.or.more.children.age.40"               
-## [37] "individual.3.or.more.children.age.50"               
-## [38] "med.ded.indv"                                       
-## [39] "drug.deductible.individual.standard"                
-## [40] "med.ded.fam"                                        
-## [41] "drug.deductible.family.standard"                    
-## [42] "ind.oop.max"                                        
-## [43] "fam.oop.max"                                        
-## [44] "pcp.share"                                          
-## [45] "spec.share"                                         
-## [46] "er.share"                                           
-## [47] "gen.rx.share"                                       
-## [48] "preferred.brand.drugs.standard"                     
-## [49] "non.pref.rx.share"                                  
-## [50] "spec.rx.share"                                      
-## [51] "medical.deductible.individual.73.percent"           
-## [52] "drug.deductible.individual.73.percent"              
-## [53] "medical.deductible.family.73.percent"               
-## [54] "drug.deductible.family.73.percent"                  
-## [55] "medical.maximum.out.of.pocket.individual.73.percent"
-## [56] "medical.maximum.out.of.pocket.family.73.percent"    
-## [57] "primary.care.physician.73.percent"                  
-## [58] "specialist.73.percent"                              
-## [59] "emergency.room.73.percent"                          
-## [60] "generic.drugs.73.percent"                           
-## [61] "preferred.brand.drugs.73.percent"                   
-## [62] "non.preferred.brand.drugs.73.percent"               
-## [63] "specialty.drugs.73.percent"                         
-## [64] "medical.deductible.individual.87.percent"           
-## [65] "drug.deductible.individual.87.percent"              
-## [66] "medical.deductible.family.87.percent"               
-## [67] "drug.deductible.family.87.percent"                  
-## [68] "medical.maximum.out.of.pocket.individual.87.percent"
-## [69] "medical.maximum.out.of.pocket.family.87.percent"    
-## [70] "primary.care.physician.87.percent"                  
-## [71] "specialist.87.percent"                              
-## [72] "emergency.room.87.percent"                          
-## [73] "generic.drugs.87.percent"                           
-## [74] "preferred.brand.drugs.87.percent"                   
-## [75] "non.preferred.brand.drugs.87.percent"               
-## [76] "specialty.drugs.87.percent"                         
-## [77] "medical.deductible.individual.94.percent"           
-## [78] "drug.deductible.individual.94.percent"              
-## [79] "medical.deductible.family.94.percent"               
-## [80] "drug.deductible.family.94.percent"                  
-## [81] "medical.maximum.out.of.pocket.individual.94.percent"
-## [82] "medical.maximum.out.of.pocket.family.94.percent"    
-## [83] "primary.care.physician.94.percent"                  
-## [84] "specialist.94.percent"                              
-## [85] "emergency.room.94.percent"                          
-## [86] "generic.drugs.94.percent"                           
-## [87] "preferred.brand.drugs.94.percent"                   
-## [88] "non.preferred.brand.drugs.94.percent"               
-## [89] "specialty.drugs.94.percent"
-```
-
-```r
+# names(policies)[which(apply(policies, 2, function(x) any(grepl('\\$',
+# x))))]
 
 # The dollar-only columns have to be individually selected
 dollar.cols <- names(policies)[grep("\\.ded\\.|\\.oop\\.|premium\\.child|prem\\.ind|prem\\.cpl", 
@@ -401,20 +308,12 @@ parse.prices(policies$pcp.share)
 ```
 
 ```
-## Warning: NAs introduced by coercion
-```
-
-```
 ##  [1] NA NA NA NA NA NA 25 25 40 NA 35 NA 35 10 NA 10 NA 50 50 40 20 20 25
 ## [24] 25 30 30 30  5  5 25 25 45 35 35 35 35 10 10
 ```
 
 ```r
 parse.percents(policies$spec.share)
-```
-
-```
-## Warning: NAs introduced by coercion
 ```
 
 ```
@@ -426,27 +325,7 @@ parse.percents(policies$spec.share)
 ```r
 
 copays <- sapply(policies[, grep("share", names(policies))], parse.prices)
-```
-
-```
-## Warning: NAs introduced by coercion Warning: NAs introduced by coercion
-## Warning: NAs introduced by coercion Warning: NAs introduced by coercion
-## Warning: NAs introduced by coercion Warning: NAs introduced by coercion
-## Warning: NAs introduced by coercion Warning: NAs introduced by coercion
-```
-
-```r
 coinsurance <- sapply(policies[, grep("share", names(policies))], parse.percents)
-```
-
-```
-## Warning: NAs introduced by coercion Warning: NAs introduced by coercion
-## Warning: NAs introduced by coercion Warning: NAs introduced by coercion
-## Warning: NAs introduced by coercion Warning: NAs introduced by coercion
-## Warning: NAs introduced by coercion Warning: NAs introduced by coercion
-```
-
-```r
 
 copays <- data.frame(copays)
 copays[is.na(copays)] <- 0
@@ -454,209 +333,6 @@ coinsurance <- data.frame(coinsurance)
 coinsurance[is.na(coinsurance)] <- 0
 names(copays) <- gsub("share", "copay", names(copays))
 names(coinsurance) <- gsub("share", "coinsurance", names(coinsurance))
-
-cbind(copays, coinsurance)
-```
-
-```
-##    pcp.copay spec.copay er.copay hosp.fac.copay hosp.doc.copay
-## 1          0          0        0              0              0
-## 2          0          0        0              0              0
-## 3          0          0        0              0              0
-## 4          0          0        0              0              0
-## 5          0          0        0              0              0
-## 6          0          0        0              0              0
-## 7         25         25        0              0              0
-## 8         25         25        0              0              0
-## 9         40          0        0              0              0
-## 10         0          0        0              0              0
-## 11        35          0        0              0              0
-## 12         0          0        0              0              0
-## 13        35          0        0              0              0
-## 14        10         75      500              0              0
-## 15         0          0        0              0              0
-## 16        10         75      500              0              0
-## 17         0          0        0              0              0
-## 18        50          0        0              0              0
-## 19        50          0        0              0              0
-## 20        40          0        0              0              0
-## 21        20          0        0              0              0
-## 22        20          0        0              0              0
-## 23        25         25        0              0              0
-## 24        25         25        0              0              0
-## 25        30          0        0              0              0
-## 26        30          0        0              0              0
-## 27        30          0        0              0              0
-## 28         5         50      250              0              0
-## 29         5         50      250              0              0
-## 30        25         25        0              0              0
-## 31        25         25        0              0              0
-## 32        45          0        0              0              0
-## 33        35          0        0              0              0
-## 34        35          0        0              0              0
-## 35        35          0        0              0              0
-## 36        35          0        0              0              0
-## 37        10         75      500              0              0
-## 38        10         75      500              0              0
-##    gen.rx.copay non.pref.rx.copay spec.rx.copay pcp.coinsurance
-## 1             0                 0             0            0.30
-## 2             0                 0             0            0.20
-## 3             0                 0             0            0.10
-## 4             0                 0             0            0.30
-## 5             0                 0             0            0.20
-## 6             0                 0             0            0.10
-## 7             0                 0             0            0.40
-## 8             0                 0             0            0.40
-## 9             0                 0             0            0.25
-## 10            0                 0             0            0.15
-## 11            0                 0             0            0.35
-## 12            0                 0             0            0.25
-## 13            0                 0             0            0.35
-## 14           15                75             0            0.00
-## 15            0                 0             0            0.00
-## 16           15                75             0            0.00
-## 17            0                 0             0            0.00
-## 18            0                 0             0            0.00
-## 19            0                 0             0            0.00
-## 20            0                 0             0            0.00
-## 21            0                 0             0            0.00
-## 22            0                 0             0            0.00
-## 23           15                50            50            0.10
-## 24           15                50            50            0.10
-## 25           15                 0             0            0.00
-## 26           15                 0             0            0.00
-## 27           15                 0             0            0.00
-## 28            3                60             0            0.00
-## 29            3                60             0            0.00
-## 30           15                50            50            0.20
-## 31           15                50            50            0.20
-## 32           15                 0             0            0.00
-## 33           15                 0             0            0.20
-## 34           15                 0             0            0.00
-## 35           15                 0             0            0.30
-## 36           15                 0             0            0.30
-## 37            5                75             0            0.00
-## 38            5                75             0            0.00
-##    spec.coinsurance er.coinsurance hosp.fac.coinsurance
-## 1              0.30           0.30                 0.30
-## 2              0.20           0.20                 0.20
-## 3              0.10           0.10                 0.10
-## 4              0.30           0.30                 0.30
-## 5              0.20           0.20                 0.20
-## 6              0.10           0.10                 0.10
-## 7              0.40           0.40                 0.40
-## 8              0.40           0.40                 0.40
-## 9              0.25           0.35                 0.25
-## 10             0.15           0.15                 0.15
-## 11             0.35           0.45                 0.35
-## 12             0.25           0.35                 0.25
-## 13             0.35           0.45                 0.35
-## 14             0.00           0.00                 0.40
-## 15             0.00           0.00                 0.00
-## 16             0.00           0.00                 0.40
-## 17             0.00           0.00                 0.00
-## 18             0.00           0.00                 0.00
-## 19             0.00           0.00                 0.00
-## 20             0.00           0.00                 0.00
-## 21             0.00           0.00                 0.00
-## 22             0.00           0.00                 0.00
-## 23             0.10           0.10                 0.10
-## 24             0.10           0.10                 0.10
-## 25             0.20           0.30                 0.20
-## 26             0.20           0.30                 0.20
-## 27             0.20           0.30                 0.20
-## 28             0.00           0.00                 0.20
-## 29             0.00           0.00                 0.20
-## 30             0.20           0.20                 0.20
-## 31             0.20           0.20                 0.20
-## 32             0.15           0.25                 0.15
-## 33             0.20           0.30                 0.20
-## 34             0.20           0.30                 0.20
-## 35             0.30           0.40                 0.30
-## 36             0.30           0.40                 0.30
-## 37             0.00           0.00                 0.40
-## 38             0.00           0.00                 0.40
-##    hosp.doc.coinsurance gen.rx.coinsurance non.pref.rx.coinsurance
-## 1                  0.30               0.50                    0.50
-## 2                  0.20               0.50                    0.50
-## 3                  0.10               0.50                    0.50
-## 4                  0.30               0.50                    0.50
-## 5                  0.20               0.50                    0.50
-## 6                  0.10               0.50                    0.50
-## 7                  0.40               0.50                    0.50
-## 8                  0.40               0.50                    0.50
-## 9                  0.25               0.25                    0.25
-## 10                 0.15               0.15                    0.15
-## 11                 0.35               0.35                    0.35
-## 12                 0.25               0.25                    0.25
-## 13                 0.35               0.35                    0.35
-## 14                 0.40               0.00                    0.00
-## 15                 0.00               0.00                    0.00
-## 16                 0.40               0.00                    0.00
-## 17                 0.00               0.00                    0.00
-## 18                 0.00               0.00                    0.00
-## 19                 0.00               0.00                    0.00
-## 20                 0.00               0.00                    0.00
-## 21                 0.00               0.00                    0.00
-## 22                 0.00               0.00                    0.00
-## 23                 0.10               0.00                    0.00
-## 24                 0.10               0.00                    0.00
-## 25                 0.20               0.00                    0.20
-## 26                 0.20               0.00                    0.20
-## 27                 0.20               0.00                    0.20
-## 28                 0.20               0.00                    0.00
-## 29                 0.20               0.00                    0.00
-## 30                 0.20               0.00                    0.00
-## 31                 0.20               0.00                    0.00
-## 32                 0.15               0.00                    0.15
-## 33                 0.20               0.00                    0.20
-## 34                 0.20               0.00                    0.20
-## 35                 0.30               0.00                    0.30
-## 36                 0.30               0.00                    0.30
-## 37                 0.40               0.00                    0.00
-## 38                 0.40               0.00                    0.00
-##    spec.rx.coinsurance
-## 1                 0.50
-## 2                 0.50
-## 3                 0.50
-## 4                 0.50
-## 5                 0.50
-## 6                 0.50
-## 7                 0.50
-## 8                 0.50
-## 9                 0.25
-## 10                0.15
-## 11                0.35
-## 12                0.25
-## 13                0.35
-## 14                0.30
-## 15                0.00
-## 16                0.30
-## 17                0.00
-## 18                0.00
-## 19                0.00
-## 20                0.00
-## 21                0.00
-## 22                0.00
-## 23                0.00
-## 24                0.00
-## 25                0.20
-## 26                0.20
-## 27                0.20
-## 28                0.20
-## 29                0.20
-## 30                0.00
-## 31                0.00
-## 32                0.15
-## 33                0.20
-## 34                0.20
-## 35                0.30
-## 36                0.30
-## 37                0.30
-## 38                0.30
-```
-
-```r
 
 policies <- cbind(policies, copays, coinsurance)
 ```
@@ -698,6 +374,8 @@ The risk factors are probabilities passed to a binomial distribution. If the res
 
 In the following sample family, Parent A visits the doctor less than Parent A, and the children are more likely to get sick. Everyone has a 1% chance of catastrophic sickness or injury.
 
+TODO: all the risk factors should correspond to the plans' different deductible, copay, and coinsurance attributes.
+
 
 ```r
 insured <- rbind(data.frame(Name = "Parent A", Age = 40, VisitBase = 150, SickRisk = 0.1, 
@@ -720,13 +398,6 @@ prem.cols <- names(policies)[grep("prem\\.|premium\\.child", names(policies))]
 prems <- melt(policies[c("plan.id", prem.cols)], id = "plan.id")
 prems$age <- gsub("prem\\.ind\\.|prem\\.cpl\\.", "", prems$variable)
 prems$age <- as.numeric(prems$age)
-```
-
-```
-## Warning: NAs introduced by coercion
-```
-
-```r
 prems[prems$variable == "premium.child", "age"] <- 20
 prems$customer <- ifelse(grepl("cpl", prems$variable), "Couple", ifelse(grepl("ind", 
     prems$variable), "Individual", "Child"))
@@ -783,13 +454,13 @@ subset(costs, cost.iteration == 1)
 
 ```
 ##          Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1    Parent A              1 Parent A      134.0         0        0
-## 501  Parent B              1 Parent B      167.9         0        0
-## 1001  Child C              1  Child C      146.8         0        0
-## 1501  Child D              1  Child D      120.6         0        0
-## 2001  Child E              1  Child E      134.9         0        0
-## 2501  Child F              1  Child F      167.9         0        0
-## 3001  Child G              1  Child G      166.1         0        0
+## 1    Parent A              1 Parent A     180.71         0        0
+## 501  Parent B              1 Parent B     134.88         0        0
+## 1001  Child C              1  Child C     155.86         0        0
+## 1501  Child D              1  Child D     140.87         0        0
+## 2001  Child E              1  Child E     137.22         0    13000
+## 2501  Child F              1  Child F     166.96         0        0
+## 3001  Child G              1  Child G      84.55         0        0
 ```
 
 ```r
@@ -801,12 +472,12 @@ head(scenarios)
 
 ```
 ##       Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1 Parent A              1 Parent A      134.0         0        0
-## 2 Parent A              2 Parent A      485.2         0        0
-## 3 Parent A              3 Parent A      199.8       800        0
-## 4 Parent A              4 Parent A      202.3       800        0
-## 5 Parent A              5 Parent A      206.9       800        0
-## 6 Parent A              6 Parent A      182.0       800        0
+## 1 Parent A              1 Parent A      180.7         0        0
+## 2 Parent A              2 Parent A      592.9         0        0
+## 3 Parent A              3 Parent A      271.5         0        0
+## 4 Parent A              4 Parent A      286.9       500        0
+## 5 Parent A              5 Parent A      241.1       500        0
+## 6 Parent A              6 Parent A      265.1         0        0
 ##          plan.id              plan.name med.ded.indv med.ded.fam
 ## 1 20507VA1170001 Vantage FourSight 1000         1000        2000
 ## 2 20507VA1170001 Vantage FourSight 1000         1000        2000
@@ -860,8 +531,8 @@ str(scenarios)
 ##  $ Name                   : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ cost.iteration         : int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ name                   : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ visit.cost             : num  134 485 200 202 207 ...
-##  $ sick.cost              : num  0 0 800 800 800 800 800 800 0 800 ...
+##  $ visit.cost             : num  181 593 272 287 241 ...
+##  $ sick.cost              : num  0 0 0 500 500 0 0 0 0 500 ...
 ##  $ cat.cost               : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ plan.id                : chr  "20507VA1170001" "20507VA1170001" "20507VA1170001" "20507VA1170001" ...
 ##  $ plan.name              : chr  "Vantage FourSight 1000" "Vantage FourSight 1000" "Vantage FourSight 1000" "Vantage FourSight 1000" ...
@@ -894,25 +565,17 @@ str(scenarios)
 # the calculate_family() function aggregates the scenarios to the family
 # level
 results <- calculate.family(scenarios, plans)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##    1500    5200    7500    8290   11200   25200
-```
-
-```r
 head(results)
 ```
 
 ```
 ##          plan.id cost.iteration fam.costs              plan.name
-## 1 20507VA1170001              1      1038 Vantage FourSight 1000
-## 2 20507VA1170001              2      4326 Vantage FourSight 1000
-## 3 20507VA1170001              3      3848 Vantage FourSight 1000
-## 4 20507VA1170001              4      3070 Vantage FourSight 1000
-## 5 20507VA1170001              5      3975 Vantage FourSight 1000
-## 6 20507VA1170001              6      3485 Vantage FourSight 1000
+## 1 20507VA1170001              1     14001 Vantage FourSight 1000
+## 2 20507VA1170001              2      4049 Vantage FourSight 1000
+## 3 20507VA1170001              3      2975 Vantage FourSight 1000
+## 4 20507VA1170001              4      2908 Vantage FourSight 1000
+## 5 20507VA1170001              5      4496 Vantage FourSight 1000
+## 6 20507VA1170001              6      3405 Vantage FourSight 1000
 ##   med.ded.indv med.ded.fam ind.oop.max fam.oop.max pcp.copay spec.copay
 ## 1         1000        2000        6250       12500        25         25
 ## 2         1000        2000        6250       12500        25         25
@@ -942,19 +605,19 @@ head(results)
 ## 5                  0.1                  0.1                  0
 ## 6                  0.1                  0.1                  0
 ##   non.pref.rx.coinsurance spec.rx.coinsurance premium fam.sub.ded
-## 1                       0                   0    1826        2000
-## 2                       0                   0    1826        4326
-## 3                       0                   0    1826        3848
-## 4                       0                   0    1826        3070
-## 5                       0                   0    1826        3975
-## 6                       0                   0    1826        3485
+## 1                       0                   0    1826       14001
+## 2                       0                   0    1826        4049
+## 3                       0                   0    1826        2975
+## 4                       0                   0    1826        2908
+## 5                       0                   0    1826        4496
+## 6                       0                   0    1826        3405
 ##   fam.post.ded fam.copay annual.premium fam.net fam.net.max fam.net.capped
-## 1            0       0.0          21912   23912       34412          23912
-## 2         2326     232.6          21912   26471       34412          26471
-## 3         1848     184.8          21912   25945       34412          25945
-## 4         1070     107.0          21912   25089       34412          25089
-## 5         1975     197.5          21912   26084       34412          26084
-## 6         1485     148.5          21912   25545       34412          25545
+## 1      12001.0   1200.10          21912   37113       34412          34412
+## 2       2049.1    204.91          21912   26166       34412          26166
+## 3        975.3     97.53          21912   24985       34412          24985
+## 4        908.0     90.80          21912   24911       34412          24911
+## 5       2495.6    249.56          21912   26657       34412          26657
+## 6       1405.0    140.50          21912   25457       34412          25457
 ```
 
 
@@ -970,81 +633,13 @@ dxy <- ddply(results, .(plan.name), summarize, dx = density(fam.net.capped)$x,
     dy = density(fam.net.capped)$y)
 dxy <- ddply(dxy, .(plan.name), transform, qleft = quantile(dx, tail.limit.left), 
     qright = quantile(dx, tail.limit.right))
-```
-
-```
-## Warning: row names were found from a short variable and have been
-## discarded Warning: row names were found from a short variable and have
-## been discarded Warning: row names were found from a short variable and
-## have been discarded Warning: row names were found from a short variable
-## and have been discarded Warning: row names were found from a short
-## variable and have been discarded Warning: row names were found from a
-## short variable and have been discarded Warning: row names were found from
-## a short variable and have been discarded Warning: row names were found
-## from a short variable and have been discarded Warning: row names were
-## found from a short variable and have been discarded Warning: row names
-## were found from a short variable and have been discarded Warning: row
-## names were found from a short variable and have been discarded Warning:
-## row names were found from a short variable and have been discarded
-## Warning: row names were found from a short variable and have been
-## discarded Warning: row names were found from a short variable and have
-## been discarded Warning: row names were found from a short variable and
-## have been discarded Warning: row names were found from a short variable
-## and have been discarded Warning: row names were found from a short
-## variable and have been discarded Warning: row names were found from a
-## short variable and have been discarded Warning: row names were found from
-## a short variable and have been discarded Warning: row names were found
-## from a short variable and have been discarded Warning: row names were
-## found from a short variable and have been discarded Warning: row names
-## were found from a short variable and have been discarded Warning: row
-## names were found from a short variable and have been discarded Warning:
-## row names were found from a short variable and have been discarded
-## Warning: row names were found from a short variable and have been
-## discarded Warning: row names were found from a short variable and have
-## been discarded Warning: row names were found from a short variable and
-## have been discarded Warning: row names were found from a short variable
-## and have been discarded Warning: row names were found from a short
-## variable and have been discarded Warning: row names were found from a
-## short variable and have been discarded Warning: row names were found from
-## a short variable and have been discarded Warning: row names were found
-## from a short variable and have been discarded Warning: row names were
-## found from a short variable and have been discarded Warning: row names
-## were found from a short variable and have been discarded Warning: row
-## names were found from a short variable and have been discarded Warning:
-## row names were found from a short variable and have been discarded
-## Warning: row names were found from a short variable and have been
-## discarded Warning: row names were found from a short variable and have
-## been discarded
-```
-
-```r
 dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright, dxy$dy, 0)
 ```
 
 
 ## Plot the outcomes
 
-
-```r
-ggplot(results) + geom_density(aes(x = fam.net.capped)) + geom_area(data = dxy, 
-    aes(x = dx, y = ytail), fill = "green", colour = NA, alpha = 0.5) + geom_vline(aes(xintercept = fam.net.max), 
-    color = "red") + facet_wrap(~plan.name, ncol = 1)
-```
-
-![plot of chunk plot.outcomes](figure/plot_outcomes1.png) 
-
-```r
-
-ggplot(results) + geom_histogram(aes(x = fam.net.capped), binwidth = 100) + 
-    geom_vline(aes(xintercept = fam.net.max), color = "red") + facet_wrap(~plan.name, 
-    ncol = 1)
-```
-
-![plot of chunk plot.outcomes](figure/plot_outcomes2.png) 
-
-
 Create some range spans so the x axis on each graph can show how much of the net costs are composed of premiums (orange box), deductible costs paid at 100% (yellow box), and post-deductible copays (the amount between the yellow box and the total cost).
-
 
 
 ```r
@@ -1076,136 +671,137 @@ p.dist <- ggplot(results, aes(x = fam.net.capped)) + geom_histogram(aes(y = ..de
 ggsave(filename = "distribution.png", width = 6, height = 36)
 ```
 
+
+<img src="distribution.png" alt="Distribution curves" style="width: 200px;"/>
+
+### Five-Number Summaries instead of graphs
+
+
+```r
+
+cost.summary <- ddply(results, .(plan.id, plan.name), function(x) summary(x$fam.net.capped))
+cost.summary <- arrange(cost.summary, Median)
+cost.summary
 ```
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 32 rows containing non-finite values (stat_density).
-## Warning: Removed 500 rows containing non-finite values (stat_density).
-## Warning: Removed 24 rows containing non-finite values (stat_density).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 1 rows containing missing values (position_stack).
-## Warning: Removed 2 rows containing missing values (position_stack).
-## Warning: no non-missing arguments to min; returning Inf Warning: no
-## non-missing arguments to max; returning -Inf Warning: position_stack
-## requires constant width: output may be incorrect Warning: Removed 2 rows
-## containing missing values (position_stack). Warning: no non-missing
-## arguments to min; returning Inf Warning: no non-missing arguments to max;
-## returning -Inf Warning: position_stack requires constant width: output may
-## be incorrect Warning: Removed 2 rows containing missing values
-## (position_stack). Warning: no non-missing arguments to min; returning Inf
-## Warning: no non-missing arguments to max; returning -Inf Warning:
-## position_stack requires constant width: output may be incorrect Warning:
-## Removed 2 rows containing missing values (position_stack). Warning: no
-## non-missing arguments to min; returning Inf Warning: no non-missing
-## arguments to max; returning -Inf Warning: position_stack requires constant
-## width: output may be incorrect Warning: Removed 2 rows containing missing
-## values (position_stack). Warning: no non-missing arguments to min;
-## returning Inf Warning: no non-missing arguments to max; returning -Inf
-## Warning: position_stack requires constant width: output may be incorrect
-## Warning: Removed 2 rows containing missing values (position_stack).
-## Warning: no non-missing arguments to min; returning Inf Warning: no
-## non-missing arguments to max; returning -Inf Warning: position_stack
-## requires constant width: output may be incorrect Warning: Removed 2 rows
-## containing missing values (position_stack). Warning: no non-missing
-## arguments to min; returning Inf Warning: no non-missing arguments to max;
-## returning -Inf Warning: position_stack requires constant width: output may
-## be incorrect Warning: Removed 2 rows containing missing values
-## (position_stack). Warning: no non-missing arguments to min; returning Inf
-## Warning: no non-missing arguments to max; returning -Inf Warning:
-## position_stack requires constant width: output may be incorrect Warning:
-## Removed 2 rows containing missing values (position_stack). Warning: no
-## non-missing arguments to min; returning Inf Warning: no non-missing
-## arguments to max; returning -Inf Warning: position_stack requires constant
-## width: output may be incorrect Warning: Removed 2 rows containing missing
-## values (position_stack). Warning: no non-missing arguments to min;
-## returning Inf Warning: no non-missing arguments to max; returning -Inf
-## Warning: position_stack requires constant width: output may be incorrect
-## Warning: Removed 2 rows containing missing values (position_stack).
-## Warning: no non-missing arguments to min; returning Inf Warning: no
-## non-missing arguments to max; returning -Inf Warning: position_stack
-## requires constant width: output may be incorrect Warning: Removed 2 rows
-## containing missing values (position_stack). Warning: no non-missing
-## arguments to min; returning Inf Warning: no non-missing arguments to max;
-## returning -Inf Warning: position_stack requires constant width: output may
-## be incorrect Warning: Removed 51 rows containing missing values
-## (position_stack). Warning: Removed 73 rows containing missing values
-## (position_stack). Warning: Removed 129 rows containing missing values
-## (position_stack). Warning: Removed 54 rows containing missing values
-## (position_stack). Warning: Removed 512 rows containing missing values
-## (position_stack). Warning: no non-missing arguments to min; returning Inf
-## Warning: no non-missing arguments to max; returning -Inf Warning:
-## position_stack requires constant width: output may be incorrect Warning:
-## Removed 158 rows containing missing values (position_stack). Warning:
-## Removed 458 rows containing missing values (position_stack). Warning:
-## Removed 76 rows containing missing values (position_stack). Warning:
-## Removed 411 rows containing missing values (position_stack). Warning:
-## Removed 512 rows containing missing values (position_stack). Warning: no
-## non-missing arguments to min; returning Inf Warning: no non-missing
-## arguments to max; returning -Inf Warning: position_stack requires constant
-## width: output may be incorrect Warning: Removed 512 rows containing
-## missing values (position_stack). Warning: no non-missing arguments to min;
-## returning Inf Warning: no non-missing arguments to max; returning -Inf
-## Warning: position_stack requires constant width: output may be incorrect
-## Warning: Removed 512 rows containing missing values (position_stack).
-## Warning: no non-missing arguments to min; returning Inf Warning: no
-## non-missing arguments to max; returning -Inf Warning: position_stack
-## requires constant width: output may be incorrect Warning: Removed 207 rows
-## containing missing values (position_stack). Warning: Removed 508 rows
-## containing missing values (position_stack). Warning: Removed 512 rows
-## containing missing values (position_stack). Warning: no non-missing
-## arguments to min; returning Inf Warning: no non-missing arguments to max;
-## returning -Inf Warning: position_stack requires constant width: output may
-## be incorrect Warning: Removed 512 rows containing missing values
-## (position_stack). Warning: no non-missing arguments to min; returning Inf
-## Warning: no non-missing arguments to max; returning -Inf Warning:
-## position_stack requires constant width: output may be incorrect Warning:
-## Removed 21 rows containing missing values (position_stack). Warning:
-## Removed 512 rows containing missing values (position_stack). Warning: no
-## non-missing arguments to min; returning Inf Warning: no non-missing
-## arguments to max; returning -Inf Warning: position_stack requires constant
-## width: output may be incorrect Warning: Removed 512 rows containing
-## missing values (position_stack). Warning: no non-missing arguments to min;
-## returning Inf Warning: no non-missing arguments to max; returning -Inf
-## Warning: position_stack requires constant width: output may be incorrect
-## Warning: Removed 222 rows containing missing values (position_stack).
-## Warning: Removed 512 rows containing missing values (position_stack).
-## Warning: no non-missing arguments to min; returning Inf Warning: no
-## non-missing arguments to max; returning -Inf Warning: position_stack
-## requires constant width: output may be incorrect Warning: Removed 94 rows
-## containing missing values (position_stack). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment). Warning: Removed 1 rows
-## containing missing values (geom_segment).
+
+```
+##           plan.id
+## 1  88380VA0720009
+## 2  88380VA0880001
+## 3  88380VA0720008
+## 4  88380VA0720004
+## 5  88380VA0720007
+## 6  99663VA0140001
+## 7  99663VA0140005
+## 8  88380VA0720010
+## 9  88380VA0720003
+## 10 88380VA0720006
+## 11 88380VA0720011
+## 12 88380VA0880002
+## 13 88380VA0720005
+## 14 88380VA0720001
+## 15 88380VA0720012
+## 16 99663VA0140002
+## 17 88380VA0720002
+## 18 99663VA0140003
+## 19 99663VA0140004
+## 20 20507VA1190001
+## 21 20507VA1180001
+## 22 20507VA1180002
+## 23 20507VA1170002
+## 24 20507VA1180003
+## 25 20507VA1170001
+## 26 20507VA1190002
+## 27 99663VA0140016
+## 28 99663VA0140015
+## 29 99663VA0140014
+## 30 99663VA0140013
+## 31 99663VA0140012
+## 32 20507VA1180004
+## 33 20507VA1190003
+## 34 20507VA1170004
+## 35 20507VA1180005
+## 36 20507VA1180006
+## 37 20507VA1170003
+## 38 20507VA1190004
+##                                                                                  plan.name
+## 1                                          Anthem HealthKeepers Silver DirectAccess - cbky
+## 2  Anthem Blue Cross and Blue Shield HealthKeepers Silver DirectAccess, a Multi-State Plan
+## 3                                          Anthem HealthKeepers Silver DirectAccess - cbjs
+## 4                                    Anthem HealthKeepers Bronze DirectAccess w/HSA - cacd
+## 5                                          Anthem HealthKeepers Silver DirectAccess - cbfs
+## 6                                                                   Gold $5 Copay POS Plan
+## 7                                                               Catastrophic 100% POS Plan
+## 8                                            Anthem HealthKeepers Gold DirectAccess - ccam
+## 9                                          Anthem HealthKeepers Bronze DirectAccess - cabw
+## 10                                         Anthem HealthKeepers Silver DirectAccess - cbau
+## 11                            Anthem HealthKeepers Gold DirectAccess w/Child Dental - cdda
+## 12   Anthem Blue Cross and Blue Shield HealthKeepers Gold DirectAccess, a Multi-State Plan
+## 13                          Anthem HealthKeepers Bronze DirectAccess w/Child Dental - cdbw
+## 14                                         Anthem HealthKeepers Bronze DirectAccess - caam
+## 15                                          Anthem HealthKeepers Catastrophic DirectAccess
+## 16                                                                    Silver $10 Copay POS
+## 17                                   Anthem HealthKeepers Bronze DirectAccess w/HSA - caas
+## 18                                                               Bronze $10 Copay POS Plan
+## 19                                                         Bronze Deductible Only POS Plan
+## 20                                                                        Vantage 3500 60%
+## 21                                                                     Vantage Equity 3750
+## 22                                                                     Vantage Equity 4250
+## 23                                                              Vantage FourSight 3500 80%
+## 24                                                                     Vantage Equity 4750
+## 25                                                                  Vantage FourSight 1000
+## 26                                                                            Vantage 6350
+## 27                                                          Catastrophic 100% POS Plan-MOC
+## 28                                                     Bronze Deductible Only POS Plan-MOC
+## 29                                                           Bronze $10 Copay POS Plan-MOC
+## 30                                                                Silver $10 Copay POS-MOC
+## 31                                                              Gold $5 Copay POS Plan-MOC
+## 32                                                                  Vantage Equity 3750_MO
+## 33                                                                     Vantage 3500_60%_MO
+## 34                                                         Vantage FourSight \n3500 80%_MO
+## 35                                                                  Vantage Equity 4250_MO
+## 36                                                                  Vantage Equity 4750_MO
+## 37                                                               Vantage FourSight 1000 MO
+## 38                                                                         Vantage 6350_MO
+##      Min. 1st Qu. Median   Mean 3rd Qu.   Max.
+## 1   17300   17300  17400  18200   18200  25300
+## 2   17300   17300  17400  18200   18200  25300
+## 3   18400   18400  18400  18900   18400  26600
+## 4   18700   18700  18700  19000   18700  23600
+## 5   18800   18800  18800  19200   18800  25600
+## 6   19400   19400  19400  19900   19600  25900
+## 7   19400   19400  19400  19400   19400  19400
+## 8   18100   19100  19700  19800   20300  23600
+## 9   19800   19800  19800  20000   19800  23500
+## 10  20200   20200  20200  20400   20200  24500
+## 11  19400   20400  21000  21100   21600  24900
+## 12  19400   20400  21000  21100   21600  24900
+## 13  21100   21100  21100  21300   21100  24800
+## 14  21600   21600  21600  21700   21600  23300
+## 15  21600   21600  21600  21600   21600  21600
+## 16  21900   21900  21900  22200   21900  27100
+## 17  22300   22300  22300  22300   22300  23000
+## 18  22400   22400  22400  22500   22400  23900
+## 19  23100   23100  23100  23100   23100  23100
+## 20  23500   23500  23500  23800   23500  29000
+## 21  23700   23700  23700  24000   23700  28700
+## 22  24300   24300  24300  24500   24300  28300
+## 23  24900   24900  24900  25200   24900  30400
+## 24  24900   24900  24900  25000   24900  27900
+## 25  23900   24400  25100  25600   25700  34400
+## 26  26100   26100  26100  26100   26100  26100
+## 27  56900   56900  56900  56900   56900  56900
+## 28  78000   78000  78000  78000   78000  78000
+## 29  80800   80800  80800  80900   80800  82300
+## 30  94800   94800  94800  95100   94800 100000
+## 31  99200   99200  99200  99700   99300 106000
+## 32 122000  122000 122000 123000  122000 127000
+## 33 122000  122000 122000 122000  122000 128000
+## 34 123000  123000 123000 124000  123000 129000
+## 35 123000  123000 123000 123000  123000 127000
+## 36 123000  123000 123000 124000  123000 126000
+## 37 122000  123000 124000 124000  124000 133000
+## 38 130000  130000 130000 130000  130000 130000
 ```
 
 
