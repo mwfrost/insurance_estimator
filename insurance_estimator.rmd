@@ -73,6 +73,14 @@ rename.list['Medical.Maximum.Out.of.Pocket...family...standard',     'new.name']
 # Apply the new names
 names(policies) <- rename.list$new.name
 
+# The "MOC" and "MO" plans seem to have unusually high premiums
+# Compare:
+policies[grep('3750',policies$plan.name),]
+
+# Exclude them for now
+policies <- policies[grep('MO$|MOC$',policies$plan.name, invert=TRUE),]
+
+
 # Some of the columns containing dollar signs need to become numeric
 # There are tons of columns that won't convert directly
 # names(policies)[which(apply(policies, 2, function(x) any(grepl("\\$", x))))]
@@ -196,11 +204,13 @@ prems <- ddply(prems, .(plan.id,customer), function(x) {data.frame(
 # subset(prems, plan.id=='20507VA1170001')
 # subset(policies, plan.id=='20507VA1170001')
 
-# TODO: fix this to use couples' rates where applicable, and to cap premium at two children.
+# TODO: fix this to use couples' rates where applicable, and to cap premium after the third child.
 # as of Jan 3, it's just calling everyone an individual
 
 # Join the insured data frame to the premium costs
 ind.prems <- merge(insured[,c('Age','Name')], subset(prems, customer=='Individual'), by.x='Age', by.y='age')
+# cap the premium after the third child by zeroing out the premium for every individual not in the first five family members
+ind.prems[!ind.prems$Name %in% insured$Name[1:5],'prem'] <- 0
 fam.prems <- ddply(ind.prems, .(plan.id), summarize, premium=sum(prem))
 ```
 
@@ -248,7 +258,7 @@ dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright , dxy$dy, 0)
 
 ```
 
-## Plot the outcomes
+## Plot the outcomes as kernel densities
 
 Create some range spans so the x axis on each graph can show how much of the net costs are composed of premiums (orange box), deductible costs paid at 100% (yellow box), and post-deductible copays (the amount between the yellow box and the total cost).
 
@@ -264,7 +274,7 @@ dummyranges$premium <- 0
 ranges <- rbind(dummyranges, ranges)
 ```
 
-Plot the ranges behind the distribution graphs.
+Plot the ranges behind the kernel density graphs.
 
 ```{r combined plot}
 p.dist <- ggplot(results, aes(x=fam.net.capped)) +
@@ -276,7 +286,7 @@ p.dist <- ggplot(results, aes(x=fam.net.capped)) +
           geom_density(color="blue") +
           facet_wrap( ~ plan.name, ncol=1) +
           scale_y_continuous(limits=c(0,0.002)) +
-          scale_x_continuous("Net family costs", limits=c(0, 30000), labels = dollar)
+          scale_x_continuous("Net family costs", labels = dollar)
 
 ggsave(filename='distribution.png',width=6,height=36)
 
@@ -294,3 +304,37 @@ cost.summary
 
 ```
 
+## Probability mass instead of density
+
+```{r probabilty.histograms}
+sub.results <- subset(results, plan.id==results$plan.id[1])
+sub.ranges <- subset(ranges, plan.id==results$plan.id[1])
+sub.dxy <- subset(dxy , plan.name == sub.results$plan.name[1])
+
+# geom_histogram() and facet_grid() do not work together, see
+# https://groups.google.com/forum/#!topic/ggplot2/jGVzQi6Kmjk
+costbin <- 1000
+myhist <- function(df, colname, breaks) {
+  h <- hist(df[[colname]], breaks = breaks, plot = F)
+  xmin <- h$breaks[-length(h$breaks)]  # Min value for each bin
+  xmax <- h$breaks[-1]                 # Max value for each bin
+  data.frame(xmin, xmax, count = h$counts, total = sum(h$counts), pct=h$counts/sum(h$counts))
+}
+
+freqs <- ddply(results, .(plan.id, plan.name), myhist, "fam.net.capped", breaks = seq(0, max(results$fam.net.capped)+costbin, by=costbin))
+
+p.dist <- ggplot(freqs, aes(x=xmin)) +
+          geom_area(data=ranges, aes(x=premium , y=1) , fill="orange", alpha=0.5) + 
+          geom_area(data=ranges, aes(x=dedplusprem, y=1) , fill="yellow", alpha=0.5) +
+ #         geom_histogram(aes(y=..count../sum(..count..)), binwidth=2000, color="black", fill="gray", alpha=0.5) +
+          geom_bar(aes(y=pct),width=costbin, color="black", fill="gray", alpha=0.5,stat="identity") +
+          geom_vline(data=results, aes(xintercept=fam.net.max),color='red') +
+          facet_wrap( ~ plan.name, ncol=1) +
+          scale_y_continuous(labels = percent_format()) +
+          scale_x_continuous("Net family costs", labels = dollar)
+
+ggsave(filename='distribution_mass.png',width=6,height=36)
+
+```
+
+<img src="distribution_mass.png" alt="Distribution curves" style="width: 200px;"/>

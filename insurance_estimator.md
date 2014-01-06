@@ -275,6 +275,232 @@ rename.list["Medical.Maximum.Out.of.Pocket...family...standard", "new.name"] <- 
 # Apply the new names
 names(policies) <- rename.list$new.name
 
+# The 'MOC' and 'MO' plans seem to have unusually high premiums Compare:
+policies[grep("3750", policies$plan.name), ]
+```
+
+```
+##   state    county metal.level   issuer.name        plan.id
+## 1    VA ALBEMARLE      Bronze Optima Health 20507VA1180001
+## 4    VA ALBEMARLE      Bronze Optima Health 20507VA1180004
+##                plan.name plan.type   rating.area
+## 1    Vantage Equity 3750       HMO Rating Area 2
+## 4 Vantage Equity 3750_MO       HMO Rating Area 2
+##           child.only.offering source customer.service.phone.number.local
+## 1 Allows Adult and Child-Only  SERFF                      1-866-946-6034
+## 4 Allows Adult and Child-Only  SERFF                      1-866-946-6034
+##   customer.service.phone.number.toll.free
+## 1                          1-866-946-6034
+## 4                          1-866-946-6034
+##   customer.service.phone.number.tty                      network.url
+## 1                    1-800-225-7784 http://optimahealth.prismisp.com
+## 4                    1-800-225-7784 http://optimahealth.prismisp.com
+##                                                plan.brochure.url
+## 1 http://public.optimahealth.com/exchangesbc/HIXBrochureIFP1.pdf
+## 4 http://public.optimahealth.com/exchangesbc/HIXBrochureIFP2.pdf
+##                                               summary.of.benefits.url
+## 1 http://public.optimahealth.com/exchangesbc/HIXSBC20507VA1180001.pdf
+## 4 http://public.optimahealth.com/exchangesbc/HIXSBC20507VA1180004.pdf
+##                            drug.formulary.url adult.dental child.dental
+## 1 http://www.optimahealth.com/HIXIFPformulary           NA            X
+## 4 http://www.optimahealth.com/HIXIFPformulary           NA            X
+##   premium.scenarios premium.child prem.ind.21 prem.ind.27 prem.ind.30
+## 1                NA       $149.66     $235.68     $246.99     $267.50
+## 4                NA      $1059.60    $1668.68    $1748.78    $1893.95
+##   prem.ind.40 prem.ind.50 prem.ind.60 prem.cpl.21 prem.cpl.30 prem.cpl.40
+## 1     $301.20     $420.93     $639.64     $471.36     $535.00     $602.40
+## 4    $2132.57    $2980.26    $4528.80    $3337.36    $3787.90    $4265.14
+##   prem.cpl.50 prem.cpl.60 couple.1.child.age.21 couple.1.child.age.30
+## 1     $841.86    $1279.28               $621.02               $684.66
+## 4    $5960.52    $9057.60              $4396.97              $4847.51
+##   couple.1.child.age.40 couple.1.child.age.50 couple.2.children.age.21
+## 1               $752.06               $991.52                  $770.68
+## 4              $5324.75              $7020.13                 $5456.58
+##   couple.2.children.age.30 couple.2.children.age.40
+## 1                  $834.31                  $901.72
+## 4                 $5907.12                 $6384.36
+##   couple.2.children.age.50 couple.3.or.more.children.age.21
+## 1                 $1141.18                          $920.34
+## 4                 $8079.74                         $6516.19
+##   couple.3.or.more.children.age.30 couple.3.or.more.children.age.40
+## 1                          $983.98                         $1051.38
+## 4                         $6966.73                         $7443.97
+##   couple.3.or.more.children.age.50 individual.1.child.age.21
+## 1                         $1290.84                   $385.34
+## 4                         $9139.35                  $2728.29
+##   individual.1.child.age.30 individual.1.child.age.40
+## 1                   $417.15                   $450.86
+## 4                  $2953.56                  $3192.18
+##   individual.1.child.age.50 individual.2.children.age.21
+## 1                   $570.59                      $535.00
+## 4                  $4039.87                     $3787.89
+##   individual.2.children.age.30 individual.2.children.age.40
+## 1                      $566.81                      $600.52
+## 4                     $4013.17                     $4251.79
+##   individual.2.children.age.50 individual.3.or.more.children.age.21
+## 1                      $720.25                              $684.66
+## 4                     $5099.47                             $4847.51
+##   individual.3.or.more.children.age.30
+## 1                              $716.48
+## 4                             $5072.78
+##   individual.3.or.more.children.age.40
+## 1                              $750.18
+## 4                             $5311.40
+##   individual.3.or.more.children.age.50 standard.plan.cost.sharing
+## 1                              $869.91                         NA
+## 4                             $6159.09                         NA
+##   med.ded.indv drug.deductible.individual.standard med.ded.fam
+## 1     $3750.00                 Included in Medical    $7500.00
+## 4     $3750.00                 Included in Medical    $7500.00
+##   drug.deductible.family.standard ind.oop.max
+## 1             Included in Medical    $6250.00
+## 4             Included in Medical    $6250.00
+##   drug.maximum.out.of.pocket.individual.standard fam.oop.max
+## 1                            Included in Medical   $12500.00
+## 4                            Included in Medical   $12500.00
+##   drug.maximum.out.of.pocket.family.standard
+## 1                        Included in Medical
+## 4                        Included in Medical
+##                          pcp.share                       spec.share
+## 1 30% Coinsurance after deductible 30% Coinsurance after deductible
+## 4 30% Coinsurance after deductible 30% Coinsurance after deductible
+##                           er.share                   hosp.fac.share
+## 1 30% Coinsurance after deductible 30% Coinsurance after deductible
+## 4 30% Coinsurance after deductible 30% Coinsurance after deductible
+##                     hosp.doc.share                     gen.rx.share
+## 1 30% Coinsurance after deductible 50% Coinsurance after deductible
+## 4 30% Coinsurance after deductible 50% Coinsurance after deductible
+##     preferred.brand.drugs.standard                non.pref.rx.share
+## 1 50% Coinsurance after deductible 50% Coinsurance after deductible
+## 4 50% Coinsurance after deductible 50% Coinsurance after deductible
+##                      spec.rx.share
+## 1 50% Coinsurance after deductible
+## 4 50% Coinsurance after deductible
+##   x73.percent.actuarial.value.silver.plan.cost.sharing
+## 1                                                   NA
+## 4                                                   NA
+##   medical.deductible.individual.73.percent
+## 1                                         
+## 4                                         
+##   drug.deductible.individual.73.percent
+## 1                                      
+## 4                                      
+##   medical.deductible.family.73.percent drug.deductible.family.73.percent
+## 1                                                                       
+## 4                                                                       
+##   medical.maximum.out.of.pocket.individual.73.percent
+## 1                                                    
+## 4                                                    
+##   drug.maximum.out.of.pocket.individual.73.percent
+## 1                                                 
+## 4                                                 
+##   medical.maximum.out.of.pocket.family.73.percent
+## 1                                                
+## 4                                                
+##   drug.maximum.out.of.pocket.family.73.percent
+## 1                                             
+## 4                                             
+##   primary.care.physician.73.percent specialist.73.percent
+## 1                                                        
+## 4                                                        
+##   emergency.room.73.percent inpatient.facility.73.percent
+## 1                                                        
+## 4                                                        
+##   inpatient.physician.73.percent generic.drugs.73.percent
+## 1                                                        
+## 4                                                        
+##   preferred.brand.drugs.73.percent non.preferred.brand.drugs.73.percent
+## 1                                                                      
+## 4                                                                      
+##   specialty.drugs.73.percent
+## 1                           
+## 4                           
+##   x87.percent.actuarial.value.silver.plan.cost.sharing
+## 1                                                   NA
+## 4                                                   NA
+##   medical.deductible.individual.87.percent
+## 1                                         
+## 4                                         
+##   drug.deductible.individual.87.percent
+## 1                                      
+## 4                                      
+##   medical.deductible.family.87.percent drug.deductible.family.87.percent
+## 1                                                                       
+## 4                                                                       
+##   medical.maximum.out.of.pocket.individual.87.percent
+## 1                                                    
+## 4                                                    
+##   drug.maximum.out.of.pocket.individual.87.percent
+## 1                                                 
+## 4                                                 
+##   medical.maximum.out.of.pocket.family.87.percent
+## 1                                                
+## 4                                                
+##   drug.maximum.out.of.pocket.family.87.percent
+## 1                                             
+## 4                                             
+##   primary.care.physician.87.percent specialist.87.percent
+## 1                                                        
+## 4                                                        
+##   emergency.room.87.percent inpatient.facility.87.percent
+## 1                                                        
+## 4                                                        
+##   inpatient.physician.87.percent generic.drugs.87.percent
+## 1                                                        
+## 4                                                        
+##   preferred.brand.drugs.87.percent non.preferred.brand.drugs.87.percent
+## 1                                                                      
+## 4                                                                      
+##   specialty.drugs.87.percent
+## 1                           
+## 4                           
+##   x94.percent.actuarial.value.silver.plan.cost.sharing
+## 1                                                   NA
+## 4                                                   NA
+##   medical.deductible.individual.94.percent
+## 1                                         
+## 4                                         
+##   drug.deductible.individual.94.percent
+## 1                                      
+## 4                                      
+##   medical.deductible.family.94.percent drug.deductible.family.94.percent
+## 1                                                                       
+## 4                                                                       
+##   medical.maximum.out.of.pocket.individual.94.percent
+## 1                                                    
+## 4                                                    
+##   drug.maximum.out.of.pocket.individual.94.percent
+## 1                                                 
+## 4                                                 
+##   medical.maximum.out.of.pocket.family.94.percent
+## 1                                                
+## 4                                                
+##   drug.maximum.out.of.pocket.family.94.percent
+## 1                                             
+## 4                                             
+##   primary.care.physician.94.percent specialist.94.percent
+## 1                                                        
+## 4                                                        
+##   emergency.room.94.percent inpatient.facility.94.percent
+## 1                                                        
+## 4                                                        
+##   inpatient.physician.94.percent generic.drugs.94.percent
+## 1                                                        
+## 4                                                        
+##   preferred.brand.drugs.94.percent non.preferred.brand.drugs.94.percent
+## 1                                                                      
+## 4                                                                      
+##   specialty.drugs.94.percent
+## 1                           
+## 4
+```
+
+```r
+
+# Exclude them for now
+policies <- policies[grep("MO$|MOC$", policies$plan.name, invert = TRUE), ]
+
+
 # Some of the columns containing dollar signs need to become numeric There
 # are tons of columns that won't convert directly
 # names(policies)[which(apply(policies, 2, function(x) any(grepl('\\$',
@@ -308,8 +534,8 @@ parse.prices(policies$pcp.share)
 ```
 
 ```
-##  [1] NA NA NA NA NA NA 25 25 40 NA 35 NA 35 10 NA 10 NA 50 50 40 20 20 25
-## [24] 25 30 30 30  5  5 25 25 45 35 35 35 35 10 10
+##  [1] NA NA NA 25 40 NA 35 NA 35 10 NA 50 40 20 25 30 30 30  5 25 45 35 35
+## [24] 35 35 10
 ```
 
 ```r
@@ -317,9 +543,8 @@ parse.percents(policies$spec.share)
 ```
 
 ```
-##  [1] 0.30 0.20 0.10 0.30 0.20 0.10 0.40 0.40 0.25 0.15 0.35 0.25 0.35   NA
-## [15]   NA   NA   NA   NA   NA   NA   NA   NA 0.10 0.10 0.20 0.20 0.20   NA
-## [29]   NA 0.20 0.20 0.15 0.20 0.20 0.30 0.30   NA   NA
+##  [1] 0.30 0.20 0.10 0.40 0.25 0.15 0.35 0.25 0.35   NA   NA   NA   NA   NA
+## [15] 0.10 0.20 0.20 0.20   NA 0.20 0.15 0.20 0.20 0.30 0.30   NA
 ```
 
 ```r
@@ -422,11 +647,15 @@ prems <- ddply(prems, .(plan.id, customer), function(x) {
 # plan.id=='20507VA1170001')
 
 # TODO: fix this to use couples' rates where applicable, and to cap premium
-# at two children.  as of Jan 3, it's just calling everyone an individual
+# after the third child.  as of Jan 3, it's just calling everyone an
+# individual
 
 # Join the insured data frame to the premium costs
 ind.prems <- merge(insured[, c("Age", "Name")], subset(prems, customer == "Individual"), 
     by.x = "Age", by.y = "age")
+# cap the premium after the third child by zeroing out the premium for every
+# individual not in the first five family members
+ind.prems[!ind.prems$Name %in% insured$Name[1:5], "prem"] <- 0
 fam.prems <- ddply(ind.prems, .(plan.id), summarize, premium = sum(prem))
 ```
 
@@ -454,13 +683,13 @@ subset(costs, cost.iteration == 1)
 
 ```
 ##          Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1    Parent A              1 Parent A     180.71         0        0
-## 501  Parent B              1 Parent B     134.88         0        0
-## 1001  Child C              1  Child C     155.86         0        0
-## 1501  Child D              1  Child D     140.87         0        0
-## 2001  Child E              1  Child E     137.22         0    13000
-## 2501  Child F              1  Child F     166.96         0        0
-## 3001  Child G              1  Child G      84.55         0        0
+## 1    Parent A              1 Parent A      185.0         0        0
+## 501  Parent B              1 Parent B      197.2         0        0
+## 1001  Child C              1  Child C      174.8         0        0
+## 1501  Child D              1  Child D      187.5         0        0
+## 2001  Child E              1  Child E      221.6         0        0
+## 2501  Child F              1  Child F      134.1         0        0
+## 3001  Child G              1  Child G      184.9         0        0
 ```
 
 ```r
@@ -472,12 +701,12 @@ head(scenarios)
 
 ```
 ##       Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1 Parent A              1 Parent A      180.7         0        0
-## 2 Parent A              2 Parent A      592.9         0        0
-## 3 Parent A              3 Parent A      271.5         0        0
-## 4 Parent A              4 Parent A      286.9       500        0
-## 5 Parent A              5 Parent A      241.1       500        0
-## 6 Parent A              6 Parent A      265.1         0        0
+## 1 Parent A              1 Parent A      185.0         0        0
+## 2 Parent A              2 Parent A      459.5         0        0
+## 3 Parent A              3 Parent A      293.4         0        0
+## 4 Parent A              4 Parent A      203.6         0        0
+## 5 Parent A              5 Parent A      252.2       500        0
+## 6 Parent A              6 Parent A      209.4         0        0
 ##          plan.id              plan.name med.ded.indv med.ded.fam
 ## 1 20507VA1170001 Vantage FourSight 1000         1000        2000
 ## 2 20507VA1170001 Vantage FourSight 1000         1000        2000
@@ -514,12 +743,12 @@ head(scenarios)
 ## 5                  0.1                  0                       0
 ## 6                  0.1                  0                       0
 ##   spec.rx.coinsurance premium
-## 1                   0    1826
-## 2                   0    1826
-## 3                   0    1826
-## 4                   0    1826
-## 5                   0    1826
-## 6                   0    1826
+## 1                   0    1421
+## 2                   0    1421
+## 3                   0    1421
+## 4                   0    1421
+## 5                   0    1421
+## 6                   0    1421
 ```
 
 ```r
@@ -527,12 +756,12 @@ str(scenarios)
 ```
 
 ```
-## 'data.frame':	133000 obs. of  29 variables:
+## 'data.frame':	91000 obs. of  29 variables:
 ##  $ Name                   : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ cost.iteration         : int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ name                   : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ visit.cost             : num  181 593 272 287 241 ...
-##  $ sick.cost              : num  0 0 0 500 500 0 0 0 0 500 ...
+##  $ visit.cost             : num  185 459 293 204 252 ...
+##  $ sick.cost              : num  0 0 0 0 500 0 500 0 0 0 ...
 ##  $ cat.cost               : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ plan.id                : chr  "20507VA1170001" "20507VA1170001" "20507VA1170001" "20507VA1170001" ...
 ##  $ plan.name              : chr  "Vantage FourSight 1000" "Vantage FourSight 1000" "Vantage FourSight 1000" "Vantage FourSight 1000" ...
@@ -556,7 +785,7 @@ str(scenarios)
 ##  $ gen.rx.coinsurance     : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ non.pref.rx.coinsurance: num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ spec.rx.coinsurance    : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ premium                : num  1826 1826 1826 1826 1826 ...
+##  $ premium                : num  1421 1421 1421 1421 1421 ...
 ```
 
 ```r
@@ -570,12 +799,12 @@ head(results)
 
 ```
 ##          plan.id cost.iteration fam.costs              plan.name
-## 1 20507VA1170001              1     14001 Vantage FourSight 1000
-## 2 20507VA1170001              2      4049 Vantage FourSight 1000
-## 3 20507VA1170001              3      2975 Vantage FourSight 1000
-## 4 20507VA1170001              4      2908 Vantage FourSight 1000
-## 5 20507VA1170001              5      4496 Vantage FourSight 1000
-## 6 20507VA1170001              6      3405 Vantage FourSight 1000
+## 1 20507VA1170001              1      1285 Vantage FourSight 1000
+## 2 20507VA1170001              2      3916 Vantage FourSight 1000
+## 3 20507VA1170001              3      3454 Vantage FourSight 1000
+## 4 20507VA1170001              4      3001 Vantage FourSight 1000
+## 5 20507VA1170001              5      3504 Vantage FourSight 1000
+## 6 20507VA1170001              6      3692 Vantage FourSight 1000
 ##   med.ded.indv med.ded.fam ind.oop.max fam.oop.max pcp.copay spec.copay
 ## 1         1000        2000        6250       12500        25         25
 ## 2         1000        2000        6250       12500        25         25
@@ -605,19 +834,19 @@ head(results)
 ## 5                  0.1                  0.1                  0
 ## 6                  0.1                  0.1                  0
 ##   non.pref.rx.coinsurance spec.rx.coinsurance premium fam.sub.ded
-## 1                       0                   0    1826       14001
-## 2                       0                   0    1826        4049
-## 3                       0                   0    1826        2975
-## 4                       0                   0    1826        2908
-## 5                       0                   0    1826        4496
-## 6                       0                   0    1826        3405
+## 1                       0                   0    1421        2000
+## 2                       0                   0    1421        3916
+## 3                       0                   0    1421        3454
+## 4                       0                   0    1421        3001
+## 5                       0                   0    1421        3504
+## 6                       0                   0    1421        3692
 ##   fam.post.ded fam.copay annual.premium fam.net fam.net.max fam.net.capped
-## 1      12001.0   1200.10          21912   37113       34412          34412
-## 2       2049.1    204.91          21912   26166       34412          26166
-## 3        975.3     97.53          21912   24985       34412          24985
-## 4        908.0     90.80          21912   24911       34412          24911
-## 5       2495.6    249.56          21912   26657       34412          26657
-## 6       1405.0    140.50          21912   25457       34412          25457
+## 1            0       0.0          17056   19056       29556          19056
+## 2         1916     191.6          17056   21164       29556          21164
+## 3         1454     145.4          17056   20656       29556          20656
+## 4         1001     100.1          17056   20158       29556          20158
+## 5         1504     150.4          17056   20711       29556          20711
+## 6         1692     169.2          17056   20918       29556          20918
 ```
 
 
@@ -637,7 +866,7 @@ dxy$ytail <- ifelse(dxy$dx <= dxy$qleft | dxy$dx >= dxy$qright, dxy$dy, 0)
 ```
 
 
-## Plot the outcomes
+## Plot the outcomes as kernel densities
 
 Create some range spans so the x axis on each graph can show how much of the net costs are composed of premiums (orange box), deductible costs paid at 100% (yellow box), and post-deductible copays (the amount between the yellow box and the total cost).
 
@@ -655,7 +884,7 @@ ranges <- rbind(dummyranges, ranges)
 ```
 
 
-Plot the ranges behind the distribution graphs.
+Plot the ranges behind the kernel density graphs.
 
 
 ```r
@@ -666,7 +895,7 @@ p.dist <- ggplot(results, aes(x = fam.net.capped)) + geom_histogram(aes(y = ..de
     aes(x = dx, y = ytail), fill = "green", colour = NA, alpha = 0.5) + geom_vline(aes(xintercept = fam.net.max), 
     color = "red") + geom_density(color = "blue") + facet_wrap(~plan.name, ncol = 1) + 
     scale_y_continuous(limits = c(0, 0.002)) + scale_x_continuous("Net family costs", 
-    limits = c(0, 30000), labels = dollar)
+    labels = dollar)
 
 ggsave(filename = "distribution.png", width = 6, height = 36)
 ```
@@ -689,119 +918,118 @@ cost.summary
 ## 1  88380VA0720009
 ## 2  88380VA0880001
 ## 3  88380VA0720008
-## 4  88380VA0720004
-## 5  88380VA0720007
-## 6  99663VA0140001
-## 7  99663VA0140005
-## 8  88380VA0720010
-## 9  88380VA0720003
-## 10 88380VA0720006
-## 11 88380VA0720011
-## 12 88380VA0880002
+## 4  88380VA0720007
+## 5  99663VA0140001
+## 6  88380VA0720004
+## 7  88380VA0720010
+## 8  88380VA0720006
+## 9  88380VA0720011
+## 10 88380VA0880002
+## 11 88380VA0720003
+## 12 99663VA0140005
 ## 13 88380VA0720005
-## 14 88380VA0720001
-## 15 88380VA0720012
-## 16 99663VA0140002
-## 17 88380VA0720002
+## 14 99663VA0140002
+## 15 88380VA0720001
+## 16 88380VA0720012
+## 17 20507VA1190001
 ## 18 99663VA0140003
-## 19 99663VA0140004
-## 20 20507VA1190001
-## 21 20507VA1180001
+## 19 88380VA0720002
+## 20 20507VA1180001
+## 21 20507VA1170001
 ## 22 20507VA1180002
-## 23 20507VA1170002
-## 24 20507VA1180003
-## 25 20507VA1170001
+## 23 99663VA0140004
+## 24 20507VA1170002
+## 25 20507VA1180003
 ## 26 20507VA1190002
-## 27 99663VA0140016
-## 28 99663VA0140015
-## 29 99663VA0140014
-## 30 99663VA0140013
-## 31 99663VA0140012
-## 32 20507VA1180004
-## 33 20507VA1190003
-## 34 20507VA1170004
-## 35 20507VA1180005
-## 36 20507VA1180006
-## 37 20507VA1170003
-## 38 20507VA1190004
 ##                                                                                  plan.name
 ## 1                                          Anthem HealthKeepers Silver DirectAccess - cbky
 ## 2  Anthem Blue Cross and Blue Shield HealthKeepers Silver DirectAccess, a Multi-State Plan
 ## 3                                          Anthem HealthKeepers Silver DirectAccess - cbjs
-## 4                                    Anthem HealthKeepers Bronze DirectAccess w/HSA - cacd
-## 5                                          Anthem HealthKeepers Silver DirectAccess - cbfs
-## 6                                                                   Gold $5 Copay POS Plan
-## 7                                                               Catastrophic 100% POS Plan
-## 8                                            Anthem HealthKeepers Gold DirectAccess - ccam
-## 9                                          Anthem HealthKeepers Bronze DirectAccess - cabw
-## 10                                         Anthem HealthKeepers Silver DirectAccess - cbau
-## 11                            Anthem HealthKeepers Gold DirectAccess w/Child Dental - cdda
-## 12   Anthem Blue Cross and Blue Shield HealthKeepers Gold DirectAccess, a Multi-State Plan
+## 4                                          Anthem HealthKeepers Silver DirectAccess - cbfs
+## 5                                                                   Gold $5 Copay POS Plan
+## 6                                    Anthem HealthKeepers Bronze DirectAccess w/HSA - cacd
+## 7                                            Anthem HealthKeepers Gold DirectAccess - ccam
+## 8                                          Anthem HealthKeepers Silver DirectAccess - cbau
+## 9                             Anthem HealthKeepers Gold DirectAccess w/Child Dental - cdda
+## 10   Anthem Blue Cross and Blue Shield HealthKeepers Gold DirectAccess, a Multi-State Plan
+## 11                                         Anthem HealthKeepers Bronze DirectAccess - cabw
+## 12                                                              Catastrophic 100% POS Plan
 ## 13                          Anthem HealthKeepers Bronze DirectAccess w/Child Dental - cdbw
-## 14                                         Anthem HealthKeepers Bronze DirectAccess - caam
-## 15                                          Anthem HealthKeepers Catastrophic DirectAccess
-## 16                                                                    Silver $10 Copay POS
-## 17                                   Anthem HealthKeepers Bronze DirectAccess w/HSA - caas
+## 14                                                                    Silver $10 Copay POS
+## 15                                         Anthem HealthKeepers Bronze DirectAccess - caam
+## 16                                          Anthem HealthKeepers Catastrophic DirectAccess
+## 17                                                                        Vantage 3500 60%
 ## 18                                                               Bronze $10 Copay POS Plan
-## 19                                                         Bronze Deductible Only POS Plan
-## 20                                                                        Vantage 3500 60%
-## 21                                                                     Vantage Equity 3750
+## 19                                   Anthem HealthKeepers Bronze DirectAccess w/HSA - caas
+## 20                                                                     Vantage Equity 3750
+## 21                                                                  Vantage FourSight 1000
 ## 22                                                                     Vantage Equity 4250
-## 23                                                              Vantage FourSight 3500 80%
-## 24                                                                     Vantage Equity 4750
-## 25                                                                  Vantage FourSight 1000
+## 23                                                         Bronze Deductible Only POS Plan
+## 24                                                              Vantage FourSight 3500 80%
+## 25                                                                     Vantage Equity 4750
 ## 26                                                                            Vantage 6350
-## 27                                                          Catastrophic 100% POS Plan-MOC
-## 28                                                     Bronze Deductible Only POS Plan-MOC
-## 29                                                           Bronze $10 Copay POS Plan-MOC
-## 30                                                                Silver $10 Copay POS-MOC
-## 31                                                              Gold $5 Copay POS Plan-MOC
-## 32                                                                  Vantage Equity 3750_MO
-## 33                                                                     Vantage 3500_60%_MO
-## 34                                                         Vantage FourSight \n3500 80%_MO
-## 35                                                                  Vantage Equity 4250_MO
-## 36                                                                  Vantage Equity 4750_MO
-## 37                                                               Vantage FourSight 1000 MO
-## 38                                                                         Vantage 6350_MO
-##      Min. 1st Qu. Median   Mean 3rd Qu.   Max.
-## 1   17300   17300  17400  18200   18200  25300
-## 2   17300   17300  17400  18200   18200  25300
-## 3   18400   18400  18400  18900   18400  26600
-## 4   18700   18700  18700  19000   18700  23600
-## 5   18800   18800  18800  19200   18800  25600
-## 6   19400   19400  19400  19900   19600  25900
-## 7   19400   19400  19400  19400   19400  19400
-## 8   18100   19100  19700  19800   20300  23600
-## 9   19800   19800  19800  20000   19800  23500
-## 10  20200   20200  20200  20400   20200  24500
-## 11  19400   20400  21000  21100   21600  24900
-## 12  19400   20400  21000  21100   21600  24900
-## 13  21100   21100  21100  21300   21100  24800
-## 14  21600   21600  21600  21700   21600  23300
-## 15  21600   21600  21600  21600   21600  21600
-## 16  21900   21900  21900  22200   21900  27100
-## 17  22300   22300  22300  22300   22300  23000
-## 18  22400   22400  22400  22500   22400  23900
-## 19  23100   23100  23100  23100   23100  23100
-## 20  23500   23500  23500  23800   23500  29000
-## 21  23700   23700  23700  24000   23700  28700
-## 22  24300   24300  24300  24500   24300  28300
-## 23  24900   24900  24900  25200   24900  30400
-## 24  24900   24900  24900  25000   24900  27900
-## 25  23900   24400  25100  25600   25700  34400
-## 26  26100   26100  26100  26100   26100  26100
-## 27  56900   56900  56900  56900   56900  56900
-## 28  78000   78000  78000  78000   78000  78000
-## 29  80800   80800  80800  80900   80800  82300
-## 30  94800   94800  94800  95100   94800 100000
-## 31  99200   99200  99200  99700   99300 106000
-## 32 122000  122000 122000 123000  122000 127000
-## 33 122000  122000 122000 122000  122000 128000
-## 34 123000  123000 123000 124000  123000 129000
-## 35 123000  123000 123000 123000  123000 127000
-## 36 123000  123000 123000 124000  123000 126000
-## 37 122000  123000 124000 124000  124000 133000
-## 38 130000  130000 130000 130000  130000 130000
+##     Min. 1st Qu. Median  Mean 3rd Qu.  Max.
+## 1  14100   14100  14500 15100   15500 22100
+## 2  14100   14100  14500 15100   15500 22100
+## 3  15300   15300  15300 15700   15300 23500
+## 4  15800   15800  15800 16100   15800 22600
+## 5  15900   15900  15900 16400   16400 22400
+## 6  16200   16200  16200 16400   16200 21100
+## 7  14500   15500  16200 16300   17000 20000
+## 8  17200   17200  17200 17300   17200 21500
+## 9  15500   16500  17200 17300   18000 21000
+## 10 15500   16500  17200 17300   18000 21000
+## 11 17400   17400  17400 17500   17400 21100
+## 12 17900   17900  17900 17900   17900 17900
+## 13 18400   18400  18400 18500   18400 22100
+## 14 18700   18700  18700 18900   18700 23900
+## 15 19300   19300  19300 19300   19300 21000
+## 16 19700   19700  19700 19700   19700 19700
+## 17 19800   19800  19800 20000   19800 25300
+## 18 19900   19900  19900 20000   19900 21400
+## 19 20000   20000  20000 20000   20000 20700
+## 20 20100   20100  20100 20300   20100 25100
+## 21 19100   19700  20500 20800   21300 29600
+## 22 20800   20800  20800 20900   20800 24800
+## 23 20800   20800  20800 20800   20800 20800
+## 24 20900   20900  20900 21100   20900 26400
+## 25 21500   21500  21500 21600   21500 24500
+## 26 23100   23100  23100 23100   23100 23100
 ```
 
 
+## Probability mass instead of density
+
+
+```r
+sub.results <- subset(results, plan.id == results$plan.id[1])
+sub.ranges <- subset(ranges, plan.id == results$plan.id[1])
+sub.dxy <- subset(dxy, plan.name == sub.results$plan.name[1])
+
+# geom_histogram() and facet_grid() do not work together, see
+# https://groups.google.com/forum/#!topic/ggplot2/jGVzQi6Kmjk
+costbin <- 1000
+myhist <- function(df, colname, breaks) {
+    h <- hist(df[[colname]], breaks = breaks, plot = F)
+    xmin <- h$breaks[-length(h$breaks)]  # Min value for each bin
+    xmax <- h$breaks[-1]  # Max value for each bin
+    data.frame(xmin, xmax, count = h$counts, total = sum(h$counts), pct = h$counts/sum(h$counts))
+}
+
+freqs <- ddply(results, .(plan.id, plan.name), myhist, "fam.net.capped", breaks = seq(0, 
+    max(results$fam.net.capped) + costbin, by = costbin))
+
+p.dist <- ggplot(freqs, aes(x = xmin)) + geom_area(data = ranges, aes(x = premium, 
+    y = 1), fill = "orange", alpha = 0.5) + geom_area(data = ranges, aes(x = dedplusprem, 
+    y = 1), fill = "yellow", alpha = 0.5) + # geom_histogram(aes(y=..count../sum(..count..)), binwidth=2000,
+# color='black', fill='gray', alpha=0.5) +
+geom_bar(aes(y = pct), width = costbin, color = "black", fill = "gray", alpha = 0.5, 
+    stat = "identity") + geom_vline(data = results, aes(xintercept = fam.net.max), 
+    color = "red") + facet_wrap(~plan.name, ncol = 1) + scale_y_continuous(labels = percent_format()) + 
+    scale_x_continuous("Net family costs", labels = dollar)
+
+ggsave(filename = "distribution_mass.png", width = 6, height = 36)
+```
+
+
+<img src="distribution_mass.png" alt="Distribution curves" style="width: 200px;"/>
