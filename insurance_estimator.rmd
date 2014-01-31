@@ -26,18 +26,12 @@ Update, Dec 13, 2013: the available policies can be fetched from http://data.hea
 
 Update: Jan 3, the healthcare.gov policy descriptions have age-based premium levels 
 ```{r import.config}
-params <- read.csv('app_config.conf', stringsAsFactors=FALSE)
-api.key <- params[params$Parameter=='API token',]$Value
+
 
 state <- 'VA'
 county <- 'ALBEMARLE'
 
-fetch.policies <- function(state='VA', county = 'ALBEMARLE') {
-  # Docs: https://data.healthcare.gov/developers/docs/qhp-landscape-individual-market-medical
-  csvFile <- paste('https://data.healthcare.gov/resource/qhp-landscape-individual-market-medical.csv?state=',state,'&county=',county, '&$$app_token=',api.key, sep='')
-  cat(csvFile)
-  read.csv(text=getURL(csvFile), header=TRUE, stringsAsFactors=FALSE) 
-}
+
 
 policies <- fetch.policies('VA', 'ALBEMARLE')
 

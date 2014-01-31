@@ -83,20 +83,12 @@ Update, Dec 13, 2013: the available policies can be fetched from http://data.hea
 Update: Jan 3, the healthcare.gov policy descriptions have age-based premium levels 
 
 ```r
-params <- read.csv("app_config.conf", stringsAsFactors = FALSE)
-api.key <- params[params$Parameter == "API token", ]$Value
+
 
 state <- "VA"
 county <- "ALBEMARLE"
 
-fetch.policies <- function(state = "VA", county = "ALBEMARLE") {
-    # Docs:
-    # https://data.healthcare.gov/developers/docs/qhp-landscape-individual-market-medical
-    csvFile <- paste("https://data.healthcare.gov/resource/qhp-landscape-individual-market-medical.csv?state=", 
-        state, "&county=", county, "&$$app_token=", api.key, sep = "")
-    cat(csvFile)
-    read.csv(text = getURL(csvFile), header = TRUE, stringsAsFactors = FALSE)
-}
+
 
 policies <- fetch.policies("VA", "ALBEMARLE")
 ```
@@ -683,13 +675,13 @@ subset(costs, cost.iteration == 1)
 
 ```
 ##          Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1    Parent A              1 Parent A      185.0         0        0
-## 501  Parent B              1 Parent B      197.2         0        0
-## 1001  Child C              1  Child C      174.8         0        0
-## 1501  Child D              1  Child D      187.5         0        0
-## 2001  Child E              1  Child E      221.6         0        0
-## 2501  Child F              1  Child F      134.1         0        0
-## 3001  Child G              1  Child G      184.9         0        0
+## 1    Parent A              1 Parent A      154.5         0        0
+## 501  Parent B              1 Parent B      132.1         0        0
+## 1001  Child C              1  Child C      174.3         0        0
+## 1501  Child D              1  Child D      166.1         0        0
+## 2001  Child E              1  Child E      126.7         0        0
+## 2501  Child F              1  Child F      158.5         0        0
+## 3001  Child G              1  Child G      100.1         0        0
 ```
 
 ```r
@@ -701,12 +693,12 @@ head(scenarios)
 
 ```
 ##       Name cost.iteration     name visit.cost sick.cost cat.cost
-## 1 Parent A              1 Parent A      185.0         0        0
-## 2 Parent A              2 Parent A      459.5         0        0
-## 3 Parent A              3 Parent A      293.4         0        0
-## 4 Parent A              4 Parent A      203.6         0        0
-## 5 Parent A              5 Parent A      252.2       500        0
-## 6 Parent A              6 Parent A      209.4         0        0
+## 1 Parent A              1 Parent A      154.5         0        0
+## 2 Parent A              2 Parent A      479.4         0        0
+## 3 Parent A              3 Parent A      223.0       500    13000
+## 4 Parent A              4 Parent A      209.3         0        0
+## 5 Parent A              5 Parent A      258.9       500        0
+## 6 Parent A              6 Parent A      218.7       500        0
 ##          plan.id              plan.name med.ded.indv med.ded.fam
 ## 1 20507VA1170001 Vantage FourSight 1000         1000        2000
 ## 2 20507VA1170001 Vantage FourSight 1000         1000        2000
@@ -760,9 +752,9 @@ str(scenarios)
 ##  $ Name                   : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ cost.iteration         : int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ name                   : Factor w/ 7 levels "Parent A","Parent B",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ visit.cost             : num  185 459 293 204 252 ...
-##  $ sick.cost              : num  0 0 0 0 500 0 500 0 0 0 ...
-##  $ cat.cost               : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ visit.cost             : num  154 479 223 209 259 ...
+##  $ sick.cost              : num  0 0 500 0 500 500 0 0 0 500 ...
+##  $ cat.cost               : num  0 0 13000 0 0 0 0 0 0 0 ...
 ##  $ plan.id                : chr  "20507VA1170001" "20507VA1170001" "20507VA1170001" "20507VA1170001" ...
 ##  $ plan.name              : chr  "Vantage FourSight 1000" "Vantage FourSight 1000" "Vantage FourSight 1000" "Vantage FourSight 1000" ...
 ##  $ med.ded.indv           : num  1000 1000 1000 1000 1000 1000 1000 1000 1000 1000 ...
@@ -799,12 +791,12 @@ head(results)
 
 ```
 ##          plan.id cost.iteration fam.costs              plan.name
-## 1 20507VA1170001              1      1285 Vantage FourSight 1000
-## 2 20507VA1170001              2      3916 Vantage FourSight 1000
-## 3 20507VA1170001              3      3454 Vantage FourSight 1000
-## 4 20507VA1170001              4      3001 Vantage FourSight 1000
-## 5 20507VA1170001              5      3504 Vantage FourSight 1000
-## 6 20507VA1170001              6      3692 Vantage FourSight 1000
+## 1 20507VA1170001              1      1012 Vantage FourSight 1000
+## 2 20507VA1170001              2      4910 Vantage FourSight 1000
+## 3 20507VA1170001              3     16312 Vantage FourSight 1000
+## 4 20507VA1170001              4      2928 Vantage FourSight 1000
+## 5 20507VA1170001              5      3842 Vantage FourSight 1000
+## 6 20507VA1170001              6      3312 Vantage FourSight 1000
 ##   med.ded.indv med.ded.fam ind.oop.max fam.oop.max pcp.copay spec.copay
 ## 1         1000        2000        6250       12500        25         25
 ## 2         1000        2000        6250       12500        25         25
@@ -835,18 +827,18 @@ head(results)
 ## 6                  0.1                  0.1                  0
 ##   non.pref.rx.coinsurance spec.rx.coinsurance premium fam.sub.ded
 ## 1                       0                   0    1421        2000
-## 2                       0                   0    1421        3916
-## 3                       0                   0    1421        3454
-## 4                       0                   0    1421        3001
-## 5                       0                   0    1421        3504
-## 6                       0                   0    1421        3692
+## 2                       0                   0    1421        4910
+## 3                       0                   0    1421       16312
+## 4                       0                   0    1421        2928
+## 5                       0                   0    1421        3842
+## 6                       0                   0    1421        3312
 ##   fam.post.ded fam.copay annual.premium fam.net fam.net.max fam.net.capped
 ## 1            0       0.0          17056   19056       29556          19056
-## 2         1916     191.6          17056   21164       29556          21164
-## 3         1454     145.4          17056   20656       29556          20656
-## 4         1001     100.1          17056   20158       29556          20158
-## 5         1504     150.4          17056   20711       29556          20711
-## 6         1692     169.2          17056   20918       29556          20918
+## 2         2910     291.0          17056   22257       29556          22257
+## 3        14312    1431.2          17056   34800       29556          29556
+## 4          928      92.8          17056   20077       29556          20077
+## 5         1842     184.2          17056   21082       29556          21082
+## 6         1312     131.2          17056   20500       29556          20500
 ```
 
 
@@ -920,11 +912,11 @@ cost.summary
 ## 3  88380VA0720008
 ## 4  88380VA0720007
 ## 5  99663VA0140001
-## 6  88380VA0720004
-## 7  88380VA0720010
-## 8  88380VA0720006
-## 9  88380VA0720011
-## 10 88380VA0880002
+## 6  88380VA0720010
+## 7  88380VA0720004
+## 8  88380VA0720011
+## 9  88380VA0880002
+## 10 88380VA0720006
 ## 11 88380VA0720003
 ## 12 99663VA0140005
 ## 13 88380VA0720005
@@ -947,11 +939,11 @@ cost.summary
 ## 3                                          Anthem HealthKeepers Silver DirectAccess - cbjs
 ## 4                                          Anthem HealthKeepers Silver DirectAccess - cbfs
 ## 5                                                                   Gold $5 Copay POS Plan
-## 6                                    Anthem HealthKeepers Bronze DirectAccess w/HSA - cacd
-## 7                                            Anthem HealthKeepers Gold DirectAccess - ccam
-## 8                                          Anthem HealthKeepers Silver DirectAccess - cbau
-## 9                             Anthem HealthKeepers Gold DirectAccess w/Child Dental - cdda
-## 10   Anthem Blue Cross and Blue Shield HealthKeepers Gold DirectAccess, a Multi-State Plan
+## 6                                            Anthem HealthKeepers Gold DirectAccess - ccam
+## 7                                    Anthem HealthKeepers Bronze DirectAccess w/HSA - cacd
+## 8                             Anthem HealthKeepers Gold DirectAccess w/Child Dental - cdda
+## 9    Anthem Blue Cross and Blue Shield HealthKeepers Gold DirectAccess, a Multi-State Plan
+## 10                                         Anthem HealthKeepers Silver DirectAccess - cbau
 ## 11                                         Anthem HealthKeepers Bronze DirectAccess - cabw
 ## 12                                                              Catastrophic 100% POS Plan
 ## 13                          Anthem HealthKeepers Bronze DirectAccess w/Child Dental - cdbw
@@ -969,31 +961,31 @@ cost.summary
 ## 25                                                                     Vantage Equity 4750
 ## 26                                                                            Vantage 6350
 ##     Min. 1st Qu. Median  Mean 3rd Qu.  Max.
-## 1  14100   14100  14500 15100   15500 22100
-## 2  14100   14100  14500 15100   15500 22100
-## 3  15300   15300  15300 15700   15300 23500
-## 4  15800   15800  15800 16100   15800 22600
-## 5  15900   15900  15900 16400   16400 22400
-## 6  16200   16200  16200 16400   16200 21100
-## 7  14500   15500  16200 16300   17000 20000
-## 8  17200   17200  17200 17300   17200 21500
-## 9  15500   16500  17200 17300   18000 21000
-## 10 15500   16500  17200 17300   18000 21000
-## 11 17400   17400  17400 17500   17400 21100
+## 1  14100   14100  14400 15200   15300 22100
+## 2  14100   14100  14400 15200   15300 22100
+## 3  15300   15300  15300 16000   15300 23500
+## 4  15800   15800  15800 16300   15800 22600
+## 5  15900   15900  15900 16500   16200 22400
+## 6  14500   15500  16100 16300   16800 20000
+## 7  16200   16200  16200 16600   16200 21100
+## 8  15500   16500  17100 17300   17800 21000
+## 9  15500   16500  17100 17300   17800 21000
+## 10 17200   17200  17200 17500   17200 21500
+## 11 17400   17400  17400 17700   17400 21100
 ## 12 17900   17900  17900 17900   17900 17900
-## 13 18400   18400  18400 18500   18400 22100
-## 14 18700   18700  18700 18900   18700 23900
-## 15 19300   19300  19300 19300   19300 21000
+## 13 18400   18400  18400 18700   18400 22100
+## 14 18700   18700  18700 19100   18700 23900
+## 15 19300   19300  19300 19400   19300 21000
 ## 16 19700   19700  19700 19700   19700 19700
-## 17 19800   19800  19800 20000   19800 25300
+## 17 19800   19800  19800 20200   19800 25300
 ## 18 19900   19900  19900 20000   19900 21400
 ## 19 20000   20000  20000 20000   20000 20700
-## 20 20100   20100  20100 20300   20100 25100
-## 21 19100   19700  20500 20800   21300 29600
-## 22 20800   20800  20800 20900   20800 24800
+## 20 20100   20100  20100 20500   20100 25100
+## 21 19100   19700  20400 21000   21100 29600
+## 22 20800   20800  20800 21100   20800 24800
 ## 23 20800   20800  20800 20800   20800 20800
-## 24 20900   20900  20900 21100   20900 26400
-## 25 21500   21500  21500 21600   21500 24500
+## 24 20900   20900  20900 21300   20900 26400
+## 25 21500   21500  21500 21700   21500 24500
 ## 26 23100   23100  23100 23100   23100 23100
 ```
 
