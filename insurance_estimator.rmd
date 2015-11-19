@@ -28,12 +28,12 @@ Update: Jan 3, the healthcare.gov policy descriptions have age-based premium lev
 ```{r import.config}
 
 
-state <- 'VA'
-county <- 'ALBEMARLE'
+state <- 'WA'
+county <- 'WHATCOM'
 
 
 
-policies <- fetch.policies('VA', 'ALBEMARLE')
+policies <- fetch.policies(state, county)
 
 # Example policy:
 t(policies[policies$Plan.Marketing.Name == 'Bronze Deductible Only POS Plan',])
