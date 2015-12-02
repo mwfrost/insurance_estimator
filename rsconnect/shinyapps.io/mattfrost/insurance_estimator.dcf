@@ -2,3 +2,4 @@ name: insurance_estimator
 account: mattfrost
 bundleId: 12160
 url: http://mattfrost.shinyapps.io/insurance_estimator
+server: shinyapps.io

@@ -1,6 +1,9 @@
 params <- read.csv('app_config.conf', stringsAsFactors=FALSE)
 api.key <- params[params$Parameter=='API token',]$Value
 
+
+
+
 fetch.policies <- function(state='VA', county = 'ALBEMARLE') {
   # Docs: https://data.healthcare.gov/developers/docs/qhp-landscape-individual-market-medical
   csvFile <- paste('https://data.healthcare.gov/resource/qhp-landscape-individual-market-medical.csv?state=',state,'&county=',county, '&$$app_token=',api.key, sep='')
@@ -92,6 +95,7 @@ fetch.clean.policies <- function(state='VA', county = 'ALBEMARLE') {
               policies,
               copays, 
               coinsurance)
+  return(policies)
 }
 
 calc.premiums <- function(policies, insured){
@@ -124,6 +128,8 @@ calc.premiums <- function(policies, insured){
     # cap the premium after the third child by zeroing out the premium for every individual not in the first five family members
     ind.prems[!ind.prems$Name %in% insured$Name[1:5],'prem'] <- 0
     fam.prems <- ddply(ind.prems, .(plan.id), summarize, premium=sum(prem))
+    print('calculated premiums')
+    return(fam.prems)
 }
 
 yearcosts <- function(i, n){
