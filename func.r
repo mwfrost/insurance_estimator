@@ -98,7 +98,30 @@ fetch.clean.policies <- function(state='VA', county = 'ALBEMARLE') {
   return(policies)
 }
 
-calc.premiums <- function(policies, insured){
+
+get.premium.column <- function(policies, insured){
+ # choose the appropriate premium based on which family members are covered.
+  # If only one member is selected, assume it's the insured person:
+  print('inside get.premium.column')
+  print( insured$Include)
+  family.included <- insured$Include
+  premium.column <- ifelse(sum(family.included, na.rm=TRUE)==1, 'prem.only.insured',
+                      ifelse(sum(family.included, na.rm=TRUE)==2 & 
+                               family.included[1] & 
+                               family.included[2] , 
+                             'prem.insured.plus.spouse',
+                        ifelse(sum(family.included, na.rm=TRUE)>1 & !family.included[2],
+                               'prem.insured.plus.children',
+                          'prem.insured.plus.family'
+                                 )
+                                )
+                              ) 
+  premium.column
+  return(premium.column)
+}
+
+
+calc.premiums.old <- function(policies, insured){
     prem.cols <- names(policies)[grep('prem\\.|premium\\.child',names(policies))]
 
     prems <- melt(policies[c('plan.id', prem.cols)], id='plan.id')

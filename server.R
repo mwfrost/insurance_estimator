@@ -10,20 +10,25 @@ shinyServer(function(input, output) {
 
   insured <-
     rbind(
-    data.frame(Name='Parent A' , Include=TRUE, Age=40, VisitBase=150,  SickRisk=0.1, CatRisk=0.01)
+    data.frame(Name='Insured' , Include=TRUE, Age=40, VisitBase=150,  SickRisk=0.1, CatRisk=0.01)
     ,
-    data.frame(Name='Parent B' , Include=TRUE, Age=40,  VisitBase=500,  SickRisk=0.2, CatRisk=0.01)
+    data.frame(Name='Spouse of Insured' , Include=TRUE, Age=40,  VisitBase=500,  SickRisk=0.2, CatRisk=0.01)
     ,
-    data.frame(Name='Child C'  , Include=TRUE, Age=5, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child A'  , Include=TRUE, Age=6, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
-    data.frame(Name='Child D' ,  Include=TRUE, Age=7, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child B' ,  Include=FALSE, Age=8, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
-    data.frame(Name='Child E' ,  Include=TRUE, Age = 9, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child C' ,  Include=FALSE, Age = 10, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
-    data.frame(Name='Child F' ,  Include=TRUE, Age = 13, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child D' ,  Include=FALSE, Age = 12, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
-    data.frame(Name='Child G' ,  Include=TRUE, Age = 15, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child E' ,  Include=FALSE, Age = 14, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    ,
+    data.frame(Name='Child F' ,  Include=FALSE, Age = 16, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    ,
+    data.frame(Name='Child G' ,  Include=FALSE, Age = 18, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     )
+  row.names(insured) <- insured$Name
 #  insured.reac <- reactiveValues(df=insured)
 
   output$tab.insured <- renderRHandsontable({
@@ -36,36 +41,30 @@ shinyServer(function(input, output) {
   
   #dat.policies <- fetch.clean.policies('VA','Albemarle') %>% group_by(metal.level) %>% mutate(metal.rank=min_rank(prem.ind.30)) %>% filter(metal.rank==1) %>% select(-metal.rank) # truncated result set for testing
   
-  dat.policies <- read.csv('test_policies.csv', stringsAsFactors = FALSE)
-#  dat.policies <- read.csv('private_data/sample_plans.csv', stringsAsFactors = FALSE)
+#  dat.policies <- read.csv('test_policies.csv', stringsAsFactors = FALSE)
+ dat.policies <- read.csv('sample_plans.csv', stringsAsFactors = FALSE)
   
   policies <- reactive({
     dat.policies
   })
   
   output$tab.policies <- renderRHandsontable({
-    rhandsontable(dat.policies %>% select(metal.level, plan.id, plan.name, prem.ind.40,prem.cpl.40,couple.3.or.more.children.age.40, pcp.share ), rowHeaders = NULL, selectCallback = TRUE) %>%
+    rhandsontable(dat.policies  , rowHeaders = NULL, selectCallback = TRUE) %>%
       hot_table(highlightCol = TRUE, highlightRow = TRUE)
   })
   
+
   observeEvent(input$tab.policies$changes,{
     print('Changed policy specs')
     dat.policies <- input$tab.policies %>% hot_to_r()
+    # update the Costs table to reflect the updated premium
+    output$tab.costs <- renderTable({
+      dat.policies[,c('plan.name',premium.column)]
+    })
     return(dat.policies)
   })   
   
-  observeEvent(input$tab.insured$changes,{
-    print('Changed family specs')
-    dat.insured <- input$tab.insured %>% hot_to_r() %>% filter(Include==TRUE)
-    print(paste("insured family members: ", nrow(dat.insured)))
-    print("about to recalculate premiums")
-    dat.prems <- calc.premiums(dat.policies, dat.insured ) 
-      output$tab.prems <- renderTable({
-        dat.prems
-      })
-    return(dat.insured)
-  })  
-    
+
   # Calculate the family premiums
 
   output$tab.insured <- renderRHandsontable({
@@ -73,19 +72,25 @@ shinyServer(function(input, output) {
       hot_table(highlightCol = TRUE, highlightRow = TRUE)
   })  
   
-  # Reduce the plans to the necessary columns and merge to the calculated premiums
-  plans <- reactive({
-    plans.temp <- policies()[,c('plan.id','plan.name',
-                         'med.ded.indv','med.ded.fam',
-                         'ind.oop.max','fam.oop.max',
-                         names(policies())[grep('copay', names(policies()))],
-                         names(policies())[grep('coinsurance', names(policies()))]
-    )]
-    merge(plans.temp,prems())
+  output$tab.costs <- renderTable({
+    # get the appropriate premium column from the family table as initially loaded.
+    premium.column <-  get.premium.column(dat.policies, insured) 
+    dat.policies[,c('plan.name',premium.column)]
   })
-  output$tab.plans <- renderTable({
-    plans()
-  })
+  
+  observeEvent(input$tab.insured$changes,{
+    print(paste("insured family members: ", sum(insured[,'Include'], na.rm=TRUE)))
+    print("about to recalculate premiums")
+    premium.column <- get.premium.column(dat.policies, input$tab.insured %>% hot_to_r() ) 
+    output$tab.costs <- renderTable({
+      dat.policies[,c('plan.name',premium.column)]
+    })
+  })  
+  
+  
+  
+  
+  
   
   n <- reactive({
       input$iSims
@@ -99,9 +104,7 @@ shinyServer(function(input, output) {
   costs <- reactive({
       yearcosts(insured, n())
       })
-  output$tab.costs <- renderTable({
-    head(costs())
-  })
+
   
   
   # The `scenarios` are unique combinations of each policy, family member, and iteration year
