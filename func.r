@@ -179,7 +179,7 @@ explode.scenarios <- function(c, p){
 }
 
 
-calculate.family <- function(i.c.p, p) {
+calculate.family <- function(i.c.p, p, premium.column) {
   fam <- ddply(i.c.p, .(plan.id, cost.iteration) , function(x) {c(
           fam.costs = sum(x$visit.cost) + sum(x$sick.cost) +  sum(x$cat.cost)
           )
@@ -189,26 +189,26 @@ calculate.family <- function(i.c.p, p) {
                p ,
                by='plan.id'
                )
-  
+  print(names(fam))
   # Costs beneath the deductible are paid out of pocket
-  fam$fam.sub.ded <-  ifelse( fam$med.ded.fam > fam$fam.costs, 
-                               fam$med.ded.fam, 
+  fam$fam.sub.ded <-  ifelse( fam$ded.in.network.family > fam$fam.costs, 
+                               fam$ded.in.network.family, 
                                fam$fam.costs
   )
   
   # How much of the gross costs exceed the deductible?
-  fam$fam.post.ded <-  ifelse( fam$fam.costs > fam$med.ded.fam, 
-                               fam$fam.costs - fam$med.ded.fam, 
+  fam$fam.post.ded <-  ifelse( fam$fam.costs > fam$ded.in.network.family, 
+                               fam$fam.costs - fam$ded.in.network.family, 
                                0
                                )
   # Apply the coinsurance percentage to the post-deductible share of costs
-  fam$fam.copay <- fam$fam.post.ded * fam$pcp.coinsurance
+  fam$fam.copay <- fam$fam.post.ded * (1 - fam$coinsurance.in.network)
   
-  fam$annual.premium <- fam$premium * 12
+  fam$annual.premium <- fam[,premium.column]
   # Net family cost is the premium + sub-deductible + post-deductible copays
   fam$fam.net <- fam$annual.premium + fam$fam.sub.ded + fam$fam.copay
   # The functional ceiling is the sum of the premiums and the out-of-pocket maximum
-  fam$fam.net.max <- fam$fam.oop.max + fam$annual.premium
+  fam$fam.net.max <- fam$oop.max.in.network.family + fam$annual.premium
   # Truncate the net costs at the functional ceiling 
   fam$fam.net.capped <- ifelse(fam$fam.net > fam$fam.net.max, fam$fam.net.max, fam$fam.net)
   

@@ -29,7 +29,8 @@ shinyServer(function(input, output) {
     data.frame(Name='Child G' ,  Include=FALSE, Age = 18, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     )
   row.names(insured) <- insured$Name
-#  insured.reac <- reactiveValues(df=insured)
+  
+  insured.reac <- reactiveValues(df.insured=insured)
 
   output$tab.insured <- renderRHandsontable({
     rhandsontable(insured, rowHeaders = NULL, selectCallback = TRUE) %>%
@@ -43,6 +44,7 @@ shinyServer(function(input, output) {
   
 #  dat.policies <- read.csv('test_policies.csv', stringsAsFactors = FALSE)
  dat.policies <- read.csv('sample_plans.csv', stringsAsFactors = FALSE)
+  dat.policies$plan.id <- row.names(dat.policies)
   
   policies <- reactive({
     dat.policies
@@ -72,59 +74,60 @@ shinyServer(function(input, output) {
       hot_table(highlightCol = TRUE, highlightRow = TRUE)
   })  
   
-  output$tab.costs <- renderTable({
-    # get the appropriate premium column from the family table as initially loaded.
+  refreshCostTable <- function(){
+    print('inside refreshCostTable')
+    insured <- insured.reac[['df.insured']]
+    # get the appropriate premium column from the family table 
+    print('About to run get.premium.column')
     premium.column <-  get.premium.column(dat.policies, insured) 
-    dat.policies[,c('plan.name',premium.column)]
+    # Simulate costs for the Included family members
+    sim.costs <- yearcosts(insured %>% filter(Include), n.sims() )
+    # Multiply the costs by the policies 
+    policies.by.costs <- explode.scenarios(sim.costs, dat.policies)
+    fam.sim.costs <- calculate.family(policies.by.costs, dat.policies, premium.column)
+    fam.policy.sums <- fam.sim.costs %>% group_by(plan.name) %>% summarize(net.min=min(avg.cost=fam.net.capped), net.avg=mean(avg.cost=fam.net.capped), net.max=max(avg.cost=fam.net.capped))
+    print(head(fam.policy.sums))
+    print(names(fam.policy.sums))
+    dat.costs <- merge(dat.policies, fam.policy.sums)
+    return(dat.costs[,c('plan.name',premium.column,'net.min', 'net.avg', 'net.max','oop.max.in.network.family')])
+  }
+  
+  
+  output$tab.costs <- renderTable({
+    refreshCostTable()
   })
   
   observeEvent(input$tab.insured$changes,{
+    insured <- input$tab.insured %>% hot_to_r()
+    insured.reac[['df.insured']] <- input$tab.insured %>% hot_to_r()
     print(paste("insured family members: ", sum(insured[,'Include'], na.rm=TRUE)))
-    print("about to recalculate premiums")
-    premium.column <- get.premium.column(dat.policies, input$tab.insured %>% hot_to_r() ) 
+    print("about to refresh the Costs table")
     output$tab.costs <- renderTable({
-      dat.policies[,c('plan.name',premium.column)]
+      refreshCostTable()
     })
+    #premium.column <- get.premium.column(dat.policies, input$tab.insured %>% hot_to_r() ) 
+    #output$tab.costs  <- renderTable({
+       #dat.policies[,c('plan.name',premium.column)]
+    #})
   })  
   
+
   
   
   
-  
-  
-  n <- reactive({
+  n.sims <- reactive({
       input$iSims
       })
   
   output$oSims <- renderText({
-    paste(n(), 'simulations run')
+    paste(n.sims(), 'simulations run')
   })
 #   
-#   # Randomly generate some costs
-  costs <- reactive({
-      yearcosts(insured, n())
-      })
+
 
   
   
-  # The `scenarios` are unique combinations of each policy, family member, and iteration year
-  
-  scenarios <- reactive({
-    explode.scenarios(costs(), plans())
-  })
-  
-  output$tab.scenarios <- renderTable({
-    head(scenarios())
-  })
 
- # The `results` are the family-level aggregate costs for each iteration and policy combo
-  results <- reactive({
-    calculate.family(scenarios(), plans())
-  })
-  output$tab.results <- renderTable({
-    head(results())
-  })
-#   
   
 # Create some range spans so the x axis on each graph can show how much of the net costs are composed of premiums (orange box), deductible costs paid at 100% (yellow box), and post-deductible copays (the amount between the yellow box and the total cost).
 #   costranges <- reactive({
