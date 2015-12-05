@@ -191,7 +191,7 @@ calculate.family <- function(i.c.p, p, premium.column) {
                )
   print(names(fam))
   # Costs beneath the deductible are paid out of pocket
-  fam$fam.sub.ded <-  ifelse( fam$ded.in.network.family > fam$fam.costs, 
+  fam$fam.sub.ded <-  ifelse( fam$ded.in.network.family < fam$fam.costs, 
                                fam$ded.in.network.family, 
                                fam$fam.costs
   )
@@ -205,6 +205,8 @@ calculate.family <- function(i.c.p, p, premium.column) {
   fam$fam.copay <- fam$fam.post.ded * (1 - fam$coinsurance.in.network)
   
   fam$annual.premium <- fam[,premium.column]
+  fam$premium.plus.deductible <- fam$annual.premium + fam$ded.in.network.family
+  
   # Net family cost is the premium + sub-deductible + post-deductible copays
   fam$fam.net <- fam$annual.premium + fam$fam.sub.ded + fam$fam.copay
   # The functional ceiling is the sum of the premiums and the out-of-pocket maximum

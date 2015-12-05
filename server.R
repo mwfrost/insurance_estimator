@@ -29,6 +29,8 @@ shinyServer(function(input, output) {
     data.frame(Name='Child G' ,  Include=FALSE, Age = 18, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     )
   row.names(insured) <- insured$Name
+  # the Age column isn't used anymore, so it's removed here
+  insured <- insured %>% select(-Age)
   
   insured.reac <- reactiveValues(df.insured=insured)
 
@@ -55,7 +57,7 @@ shinyServer(function(input, output) {
       hot_table(highlightCol = TRUE, highlightRow = TRUE)
   })
   
-
+  
   observeEvent(input$tab.policies$changes,{
     print('Changed policy specs')
     dat.policies <- input$tab.policies %>% hot_to_r()
@@ -85,26 +87,53 @@ shinyServer(function(input, output) {
     # Multiply the costs by the policies 
     policies.by.costs <- explode.scenarios(sim.costs, dat.policies)
     fam.sim.costs <- calculate.family(policies.by.costs, dat.policies, premium.column)
-    fam.policy.sums <- fam.sim.costs %>% group_by(plan.name) %>% summarize(net.min=min(avg.cost=fam.net.capped), net.avg=mean(avg.cost=fam.net.capped), net.max=max(avg.cost=fam.net.capped))
-    print(head(fam.policy.sums))
+    
+    fam.policy.sums <- fam.sim.costs %>% group_by(plan.name, premium.plus.deductible) %>% summarize(net.min=min(avg.cost=fam.net.capped), net.avg=mean(avg.cost=fam.net.capped), net.max=max(avg.cost=fam.net.capped), min.post.ded=min(fam.post.ded ))
+    chart.max <- max(fam.sim.costs$fam.net.capped)
+    # plot the distribution as a sparkline.js boxplot
+    charts <- ddply(fam.sim.costs, .(plan.name), function(x) 
+      jsonlite::toJSON(list(values=x$fam.net.capped, options = list(type = "box",chartRangeMin=0, chartRangeMax=chart.max)))
+      )
+    names(charts) <- c('plan.name','chart')
+#     fam.policy.sums$chart = c(sapply(1:5,
+#                          function(x) jsonlite::toJSON(list(values=rnorm(10),
+#                                                            options = list(type = "box"))))
+#      )
+    fam.policy.sums <- merge(fam.policy.sums, charts)
     print(names(fam.policy.sums))
     dat.costs <- merge(dat.policies, fam.policy.sums)
-    return(dat.costs[,c('plan.name',premium.column,'net.min', 'net.avg', 'net.max','oop.max.in.network.family')])
+    return(dat.costs[,c('plan.name',premium.column,'premium.plus.deductible','net.min', 'net.avg', 'net.max','oop.max.in.network.family','chart')])
   }
   
-  
-  output$tab.costs <- renderTable({
-    refreshCostTable()
-  })
+
+  output$tab.costs <- renderRHandsontable({
+    rhandsontable(refreshCostTable() %>% arrange(net.avg) ,
+#                   colHeaders=c('Plan','Premium','Premium + Deductible' , 
+#                                "Lowest Cost","Mean Cost", "Maximum Cost",
+#                                "Out-of-Pocket Maximum",'Chart'),
+                  rowHeaders = NULL)  %>% hot_col("chart", renderer = htmlwidgets::JS("renderSparkline")
+    ) %>% hot_cols(colWidths = c(200, 120, 120,120, 120, 120, 120, 200)) %>%
+    hot_cols(columnSorting = TRUE)
+  }
+)
+
   
   observeEvent(input$tab.insured$changes,{
     insured <- input$tab.insured %>% hot_to_r()
     insured.reac[['df.insured']] <- input$tab.insured %>% hot_to_r()
     print(paste("insured family members: ", sum(insured[,'Include'], na.rm=TRUE)))
     print("about to refresh the Costs table")
-    output$tab.costs <- renderTable({
-      refreshCostTable()
-    })
+    output$tab.costs <- renderRHandsontable(
+      {
+        rhandsontable(refreshCostTable() %>% arrange(net.avg) ,
+                      #                   colHeaders=c('Plan','Premium','Premium + Deductible' , 
+                      #                                "Lowest Cost","Mean Cost", "Maximum Cost",
+                      #                                "Out-of-Pocket Maximum",'Chart'),
+                      rowHeaders = NULL)  %>% hot_col("chart", renderer = htmlwidgets::JS("renderSparkline")
+                      ) %>% hot_cols(colWidths = c(200, 120, 120,120, 120, 120, 120, 200)) %>%
+          hot_cols(columnSorting = TRUE)
+      }
+    )
     #premium.column <- get.premium.column(dat.policies, input$tab.insured %>% hot_to_r() ) 
     #output$tab.costs  <- renderTable({
        #dat.policies[,c('plan.name',premium.column)]
@@ -129,7 +158,7 @@ shinyServer(function(input, output) {
   
 
   
-# Create some range spans so the x axis on each graph can show how much of the net costs are composed of premiums (orange box), deductible costs paid at 100% (yellow box), and post-deductible copays (the amount between the yellow box and the total cost).
+#Create some range spans so the x axis on each graph can show how much of the net costs are composed of premiums (orange box), deductible costs paid at 100% (yellow box), and post-deductible copays (the amount between the yellow box and the total cost).
 #   costranges <- reactive({
 #       ranges <- merge(plans(), prems())
 #       # annualize the monthly premium
