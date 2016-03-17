@@ -1,0 +1,22 @@
+{
+  "name": "insurance_estimator",
+  "homepage": "https://github.com/mwfrost/insurance_estimator",
+  "authors": [
+    "Matt Frost <mwfrost@fastmail.fm>"
+  ],
+  "description": "Insurance estimation tool",
+  "main": "insurance_angular.html",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-chart.js": "^0.9.0"
+  }
+}

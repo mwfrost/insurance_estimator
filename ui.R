@@ -21,7 +21,7 @@ shinyUI(fluidPage(
     ),
   
   
-#  sidebarPanel(
+#  sidebarPanel(  
 
    # selectInput('x', 'X', names(dataset))
     
@@ -44,8 +44,10 @@ tags$ul(
   tags$li("Post-deductible costs, split with coinsurance unitl the out-of-pocket maximum is met.")
 ),
     h3("Who's Being Covered?"),
+    p('The "Include" column determines which family members are included. The "VisitBase" column is a rough estimate of the expected costs of well visits. The "SickRisk" and "CatRisk" columns are index estimates of risks of sickness and catastrophic events, respectively.'),
     rHandsontableOutput("tab.insured", width = 500),
     h3('Costs'),
+    p('Sort by any column - the default is the average of all the estimated net costs.'),
     rHandsontableOutput("tab.costs", width=1200) 
 #    h3('What Are the Plans?'),
 #    rHandsontableOutput("tab.policies")

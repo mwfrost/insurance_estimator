@@ -12,17 +12,17 @@ shinyServer(function(input, output) {
     rbind(
     data.frame(Name='Insured' , Include=TRUE, Age=40, VisitBase=150,  SickRisk=0.1, CatRisk=0.01)
     ,
-    data.frame(Name='Spouse of Insured' , Include=TRUE, Age=40,  VisitBase=500,  SickRisk=0.2, CatRisk=0.01)
+    data.frame(Name='Spouse of Insured' , Include=TRUE, Age=40,  VisitBase=300,  SickRisk=0.2, CatRisk=0.01)
     ,
     data.frame(Name='Child A'  , Include=TRUE, Age=6, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
-    data.frame(Name='Child B' ,  Include=FALSE, Age=8, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child B' ,  Include=TRUE, Age=8, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
-    data.frame(Name='Child C' ,  Include=FALSE, Age = 10, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child C' ,  Include=TRUE, Age = 10, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
-    data.frame(Name='Child D' ,  Include=FALSE, Age = 12, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child D' ,  Include=TRUE, Age = 12, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
-    data.frame(Name='Child E' ,  Include=FALSE, Age = 14, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
+    data.frame(Name='Child E' ,  Include=TRUE, Age = 14, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
     data.frame(Name='Child F' ,  Include=FALSE, Age = 16, VisitBase=250,  SickRisk=0.4, CatRisk=0.01)
     ,
@@ -45,7 +45,7 @@ shinyServer(function(input, output) {
   #dat.policies <- fetch.clean.policies('VA','Albemarle') %>% group_by(metal.level) %>% mutate(metal.rank=min_rank(prem.ind.30)) %>% filter(metal.rank==1) %>% select(-metal.rank) # truncated result set for testing
   
 #  dat.policies <- read.csv('test_policies.csv', stringsAsFactors = FALSE)
- dat.policies <- read.csv('sample_plans.csv', stringsAsFactors = FALSE)
+ dat.policies <- read.csv('sample_plans.csv', stringsAsFactors = FALSE) %>% filter(grepl('Aetna',plan.name))
   dat.policies$plan.id <- row.names(dat.policies)
   
   policies <- reactive({
@@ -88,21 +88,25 @@ shinyServer(function(input, output) {
     policies.by.costs <- explode.scenarios(sim.costs, dat.policies)
     fam.sim.costs <- calculate.family(policies.by.costs, dat.policies, premium.column)
     
-    fam.policy.sums <- fam.sim.costs %>% group_by(plan.name, premium.plus.deductible) %>% summarize(net.min=min(avg.cost=fam.net.capped), net.avg=mean(avg.cost=fam.net.capped), net.max=max(avg.cost=fam.net.capped), min.post.ded=min(fam.post.ded ))
-    chart.max <- max(fam.sim.costs$fam.net.capped)
+    fam.policy.sums <- fam.sim.costs %>% group_by(plan.name , premium.plus.deductible) %>% summarize(net.min=min(avg.cost=fam.net.capped), net.avg=mean(avg.cost=fam.net.capped), net.max=max(avg.cost=fam.net.capped), min.post.ded=min(fam.post.ded ))
+    
+    fam.policy.sums <- merge(fam.policy.sums, dat.policies)
+    fam.policy.sums$plan.net.max <- fam.policy.sums$ded.in.network.family + fam.policy.sums$oop.max.in.network.family
+    print('--------------------')
+    
+    # print(head(fam.policy.sums))
+    chart.max <- max(fam.sim.costs$fam.net.capped) + 200
     # plot the distribution as a sparkline.js boxplot
-    charts <- ddply(fam.sim.costs, .(plan.name), function(x) 
+    box.charts <- ddply(fam.sim.costs, .(plan.name), function(x) 
       jsonlite::toJSON(list(values=x$fam.net.capped, options = list(type = "box",chartRangeMin=0, chartRangeMax=chart.max)))
       )
-    names(charts) <- c('plan.name','chart')
-#     fam.policy.sums$chart = c(sapply(1:5,
-#                          function(x) jsonlite::toJSON(list(values=rnorm(10),
-#                                                            options = list(type = "box"))))
-#      )
-    fam.policy.sums <- merge(fam.policy.sums, charts)
-    print(names(fam.policy.sums))
-    dat.costs <- merge(dat.policies, fam.policy.sums)
-    return(dat.costs[,c('plan.name',premium.column,'premium.plus.deductible','net.min', 'net.avg', 'net.max','oop.max.in.network.family','chart')])
+    names(box.charts) <- c('plan.name','box.chart')
+    fam.policy.sums$premium <- fam.policy.sums[,premium.column]
+    fam.policy.sums <- merge(fam.policy.sums, box.charts)
+    print('-------------------- box charts merged')
+    
+    dat.costs <- fam.policy.sums
+    return(dat.costs[,c('plan.name',premium.column,'premium.plus.deductible','net.min', 'net.avg', 'net.max','oop.max.in.network.family','box.chart')])
   }
   
 
@@ -111,8 +115,8 @@ shinyServer(function(input, output) {
 #                   colHeaders=c('Plan','Premium','Premium + Deductible' , 
 #                                "Lowest Cost","Mean Cost", "Maximum Cost",
 #                                "Out-of-Pocket Maximum",'Chart'),
-                  rowHeaders = NULL)  %>% hot_col("chart", renderer = htmlwidgets::JS("renderSparkline")
-    ) %>% hot_cols(colWidths = c(200, 120, 120,120, 120, 120, 120, 200)) %>%
+                  rowHeaders = NULL)  %>% hot_col("box.chart", renderer = htmlwidgets::JS("renderSparkline") 
+    )  %>% hot_cols(colWidths = c(200, 120, 120,120, 120, 120, 120, 200)) %>%
     hot_cols(columnSorting = TRUE)
   }
 )
