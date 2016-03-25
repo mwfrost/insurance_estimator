@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="stylesheet" href="bower_components/angular-chart.js/dist/angular-chart.css" />
+<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+<link rel="styleSheet" href="bower_components/angular-ui-grid/ui-grid.min.css"/>
+
+
+<title>Insurance Policy Comparison Tool</title>
+
+</head>
+<body>
+<div class="container">
+<h1>Insurance Policy Comparison</h1>
+<div ng-app="app">
+  <div class="row"  ng-controller="InsCtrl">
+    <div class="row">
+    <div class="col-lg-8 col-sm-12">
+      <h4>Family Characteristics</h4>
+      <div id="gridFamily" ui-grid="gridFamilyOptions" ui-grid-edit class="grid"></div>
+    </div>
+
+    <div class="col-lg-4 col-sm-12">
+      <h4>Cost Scenario Results</h4>
+      <div id="line">
+      <canvas
+        id="line"
+        class="chart chart-line"
+        chart-data="data"
+        chart-labels="labels"
+        chart-legend="true"
+        chart-series="series"
+        chart-click="onClick">
+      </canvas>
+    </div>
+    </div>
+
+    </div>
+  <div class="row">
+    <div class="col-lg-12 col-sm-12">
+    <h4>Plan Characteristics</h4>
+    <p>{{planList}}</p>
+
+    <div id="gridPlans" ui-grid="gridPlanOptions" ui-grid-edit class="grid"></div>
+  </div>
+  </div>
+</div>
+</div>
+
+
+</div> <!-- container -->
+</body>
+
+<script src="bower_components/angular/angular.min.js"></script>
+<script src="bower_components/angular-ui-grid/ui-grid.min.js"></script>
+<script src="bower_components/Chart.js/Chart.min.js"></script>
+<script src="bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
+
+<script src="./app.js"></script>
+
+</html>

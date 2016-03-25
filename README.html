@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Insurance Policy Comparison</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>Insurance Policy Comparison</h1>
+
+<p>Given a family profile and the characteristics of several insurance plans, iterate across <em>n</em> randomly generated years of health events and estimate the net cost to the household. Hopefully a tool like this could allow households to choose their insurance plans with something approaching the degree of analytical clarity that insurance companies themselves enjoy. </p>
+
+<p>To see the rendered source code and output, view the <a href="https://github.com/mwfrost/insurance_estimator/blob/master/insurance_estimator.md">output file <code>insurance_estimator.md</code></a></p>
+
+<p>TODO: </p>
+
+<ul>
+<li>Account for individual-level deductibles and out-of-pocket limits</li>
+<li>Build in pharmacy costs</li>
+<li>Convert to a Sparkle app</li>
+</ul>
+
+<p><em>Methodological note:</em> the analytical method proposed for this project is more complex and probably less robust than the one described <a href="http://www.youtube.com/watch?v=ujPqaE6cVjQ">here</a>:</p>
+
+<iframe width="420" height="315" src="//www.youtube.com/embed/ujPqaE6cVjQ" frameborder="0" allowfullscreen></iframe>
+
+</body>
+
+</html>
