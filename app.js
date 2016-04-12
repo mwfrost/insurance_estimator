@@ -3,6 +3,7 @@
 
 angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtrl", function ($scope) {
 
+    $scope.SimCount = 50;
 
   //
   // Data Definition
@@ -23,6 +24,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
     ];
 
     $scope.getPlanNames = function () {
+
       var planNames = [];
       angular.forEach($scope.Plans, function(plan){
         this.push(plan.planName);
@@ -30,50 +32,175 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
         return planNames;
     };
 
-    $scope.simulateYear = function () {
+    $scope.FamilyProfile = [          {
+                      "name": "Insured" ,
+                      "include": true,
+                      "age": 40,
+                      "visitBase": 150,
+                      "sickRisk": 0.1,
+                      "catRisk": 0.01
+                    },
+                    {
+                      "name": "Spouse of Insured" ,
+                      "include": true,
+                      "age": 40,
+                      "visitBase": 150,
+                      "sickRisk": 0.1,
+                      "catRisk": 0.01
+                    },
+                    {
+                      "name": "Child 1" ,
+                      "include": true,
+                      "age": 17,
+                      "visitBase": 150,
+                      "sickRisk": 0.1,
+                      "catRisk": 0.01
+                    },
+                    {
+                      "name": "Child 2" ,
+                      "include": true,
+                      "age": 15,
+                      "visitBase": 150,
+                      "sickRisk": 0.1,
+                      "catRisk": 0.01
+                    },
+                    {
+                      "name": "Child 3" ,
+                      "include": true,
+                      "age": 13,
+                      "visitBase": 150,
+                      "sickRisk": 0.1,
+                      "catRisk": 0.01
+                    },
+                    {
+                      "name": "Child 4" ,
+                      "include": true,
+                      "age": 11,
+                      "visitBase": 150,
+                      "sickRisk": 0.1,
+                      "catRisk": 0.01
+                    },
+                    {
+                      "name": "Child 5" ,
+                      "include": true,
+                      "age": 9,
+                      "visitBase": 150,
+                      "sickRisk": 0.1,
+                      "catRisk": 0.01
+                    },
+                    {
+                      "name": "Child 6" ,
+                      "include": true,
+                      "age": 7,
+                      "visitBase": 150,
+                      "sickRisk": 0.1,
+                      "catRisk": 0.01
+                    }
 
-    // -------------------
-    // iterate through each plan option, family member, and scenario year
-    // accumulate all the costs within each plan option and return a histogram
-    // -------------------
-      // for each plan option
-      var SimulatedYear = [];
-      angular.forEach($scope.Plans, function(plan){
+               ]
 
-        console.log('Add premium to random costs for plan '.concat(plan.planName));
-        var VarCosts = [];
-        VarCosts = chance.n(chance.normal, 7, {mean: 2000, dev: 1000, fixed: 2}) ;
-        console.log('Before adding premium of '.concat(plan.premiumFamily));
-        console.log(VarCosts);
-        var PlanCosts = [];
-        PlanCosts = VarCosts.map(function(cost) {
-            return cost + plan.premiumFamily;
-          });
-        console.log('After adding premium');
-        console.log(PlanCosts);
-        this.push({planname: plan.planName, costs: PlanCosts});
-      }, SimulatedYear);
+//
+// End of DDL
+//
 
-        // for each scenario run
+$scope.simulateYear = function () {
 
+  // -------------------
+  // iterate through each plan option, family member, and scenario year
+  // accumulate all the costs within each plan option and return a histogram
+  // -------------------
+  // for each plan option
+  var SimulatedYear = [];
+  angular.forEach($scope.Plans, function(plan){
 
-          // for each family member
+    console.log('Calculating simulated costs for '.concat(plan.planName).concat(', deductibleFamily is ').concat(plan.deductibleFamily));
 
-    // within each plan option, count the results by cost bin
+    // initialize an empty array of family expenses
+    var FamilyCosts = [];
 
-          // var CostCurves = [
-          //   chance.n(chance.normal, 7, {mean: 100, fixed: 7}),
-          //   chance.n(chance.normal, 7, {mean: 100, fixed: 7})
-          // ];
-        return SimulatedYear ;
+    // loop through each family member and push() the
+    // member's randomly-generated costs into the FamilyCosts object
+    // for each family member
+      angular.forEach($scope.FamilyProfile, function(familyMember){
+        console.log('Calculating simulated costs for '.concat(familyMember.name));
+
+        // calculate randomly-generated costs for each family member
+        RandCosts = chance.n(chance.normal, $scope.SimCount, {mean: 5500, dev: 1000, fixed: 2}) ;
+
+        // and weight them by the SickRisk and CatRisk factors
+        MemberCosts = RandCosts.map(function(_,i) {
+          return (RandCosts[i] * familyMember.sickRisk ) +
+          (RandCosts[i] * familyMember.catRisk ) +
+          familyMember.visitBase;
+        });
+        console.log(MemberCosts);
+        FamilyCosts.push({name: familyMember.name, costs: MemberCosts});
+      }
+    ); // end of loop through family members
+    console.log('Finished calculating FamilyCosts object');
+
+    // For now, reduce the array of member-specific costs into family costs.
+    // For each i in SimCount, iterate across all the familyMember objects m in FamilyCosts
+    // and assign the total to FamilyAnnualCosts[i]
+
+    console.log('About to sum costs across family members');
+    FamilyAnnualCosts = new Array($scope.SimCount);
+
+    for(var s = 0; s < $scope.SimCount; s++) {
+      var totalFamily = 0;
+      // loop through all family members m,
+      // get each member's cost for simulation index i
+      for(var m = 0; m < FamilyCosts.length; m++) {
+        totalFamily += FamilyCosts[m].costs[s];
+      }
+      FamilyAnnualCosts[s] = totalFamily;
     };
+    console.log('Finished reducing FamilyCosts object into FamilyAnnualCosts');
+    console.log(FamilyAnnualCosts);
+    // split each simulated year's variable costs into pre- and post-deductible
+    PlanCostsPreDeductible = FamilyAnnualCosts.map(function(cost) {
+      return (cost > plan.deductibleFamily ) ? plan.deductibleFamily : cost;
+    });
+    console.log('PlanCostsPreDeductible:');
+    console.log(PlanCostsPreDeductible);
+
+    PlanCostsPostDeductible = FamilyAnnualCosts.map(function(cost) {
+      return (cost > plan.deductibleFamily ) ? cost - plan.deductibleFamily : 0;
+    });
+    console.log('PlanCostsPostDeductible:');
+    console.log(PlanCostsPostDeductible);
+
+    // For each year, add:
+    // the annual premium
+    // the pre-deductible costs
+    // the post-deductible cost
+    PlanCostsGross = FamilyAnnualCosts.map(function(_,i) {
+      return PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i] + plan.premiumFamily;
+    });
+
+    // then truncate at the plan.maxOOPFamily value if the OOP max includes the deductible.
+    PlanCostsNet = PlanCostsGross.map(function(cost) {
+      return (cost > plan.maxOOPFamily ) ? plan.maxOOPFamily : cost;
+    });
+
+    console.log('After adding premium and capping at OOP maximum');
+    console.log(PlanCostsNet);
+    // 'this.' refers to the SimulatedYear object passed as an argument
+    this.push({planname: plan.planName, costs: PlanCostsNet, costsPreDeductible: PlanCostsPreDeductible, costsPostDeductible: PlanCostsPostDeductible});
+  }, SimulatedYear);
+
+  // within each plan option, count the results by cost bin
+
+return SimulatedYear ;
+};  // end of simulateYear function
 
     $scope.SimulatedYear = $scope.simulateYear();
 
 
+
     $scope.getPlanCosts = function () {
       console.log('executing getPlanCosts()');
-      console.log('SimulatedYear object:'.concat($scope.SimulatedYear));
+  //    console.log('SimulatedYear object:'.concat($scope.SimulatedYear));
       var PlanCosts = [];
       angular.forEach($scope.SimulatedYear, function(simyear){
         console.log('simyear:');
@@ -87,7 +214,15 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
         return PlanCosts;
     };
 
-  $scope.freqlabels = [1,2,3,4,5,6,7];
+  // A formatter for counts.
+  var formatCount = d3.format(",.0f");
+
+  $scope.simTickInterval = 10;
+  $scope.freqlabels = Array.apply(0, Array($scope.SimCount)).map(function (x, y) {
+    return (y + 1)% $scope.simTickInterval?'':(y + 1);
+  });
+
+
 //  $scope.series = ['Option A', 'Option B'];
   $scope.series = $scope.getPlanNames();
 
@@ -96,79 +231,8 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
   ;
 
   $scope.onClick = function (points, evt) {
-    //console.log(points, evt);
+    //
   };
-
-
-
-  $scope.FamilyProfile = [          {
-                    "name": "Insured" ,
-                    "include": true,
-                    "age": 40,
-                    "visitBase": 150,
-                    "sickRisk": 0.1,
-                    "catRisk": 0.01
-                  },
-                  {
-                    "name": "Spouse of Insured" ,
-                    "include": true,
-                    "age": 40,
-                    "visitBase": 150,
-                    "sickRisk": 0.1,
-                    "catRisk": 0.01
-                  },
-                  {
-                    "name": "Child 1" ,
-                    "include": true,
-                    "age": 17,
-                    "visitBase": 150,
-                    "sickRisk": 0.1,
-                    "catRisk": 0.01
-                  },
-                  {
-                    "name": "Child 2" ,
-                    "include": true,
-                    "age": 15,
-                    "visitBase": 150,
-                    "sickRisk": 0.1,
-                    "catRisk": 0.01
-                  },
-                  {
-                    "name": "Child 3" ,
-                    "include": true,
-                    "age": 13,
-                    "visitBase": 150,
-                    "sickRisk": 0.1,
-                    "catRisk": 0.01
-                  },
-                  {
-                    "name": "Child 4" ,
-                    "include": true,
-                    "age": 11,
-                    "visitBase": 150,
-                    "sickRisk": 0.1,
-                    "catRisk": 0.01
-                  },
-                  {
-                    "name": "Child 5" ,
-                    "include": true,
-                    "age": 9,
-                    "visitBase": 150,
-                    "sickRisk": 0.1,
-                    "catRisk": 0.01
-                  },
-                  {
-                    "name": "Child 6" ,
-                    "include": true,
-                    "age": 7,
-                    "visitBase": 150,
-                    "sickRisk": 0.1,
-                    "catRisk": 0.01
-                  }
-
-             ]
-
-
 
 
   $scope.gridFamilyOptions = {
