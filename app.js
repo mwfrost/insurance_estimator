@@ -7,7 +7,6 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
     $scope.meanSickCost = 2000;
     $scope.sdevSickCost = 1000;
     $scope.catCost = 75000;
-    $scope.maxIncludesPremium = false;
 
   //
   // Data Definition
@@ -37,6 +36,16 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
       }, planNames);
         return planNames;
     };
+
+    $scope.getIncludedFamilyMembers = function() {
+      var includedMembers = [];
+      angular.forEach($scope.FamilyProfile, function(member){
+        if (member.include){
+          this.push(member);
+        }
+      }, includedMembers);
+        return includedMembers;
+    }
 
     $scope.FamilyProfile = [          {
                       "name": "Insured" ,
@@ -72,7 +81,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                     },
                     {
                       "name": "Child 3" ,
-                      "include": true,
+                      "include": false,
                       "age": 13,
                       "visitBase": 150,
                       "sickRisk": 0.1,
@@ -80,7 +89,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                     },
                     {
                       "name": "Child 4" ,
-                      "include": true,
+                      "include": false,
                       "age": 11,
                       "visitBase": 150,
                       "sickRisk": 0.1,
@@ -88,7 +97,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                     },
                     {
                       "name": "Child 5" ,
-                      "include": true,
+                      "include": false,
                       "age": 9,
                       "visitBase": 150,
                       "sickRisk": 0.1,
@@ -96,7 +105,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                     },
                     {
                       "name": "Child 6" ,
-                      "include": true,
+                      "include": false,
                       "age": 7,
                       "visitBase": 150,
                       "sickRisk": 0.1,
@@ -124,10 +133,10 @@ $scope.simulateYear = function () {
     // initialize an empty array of family expenses
     var FamilyCosts = [];
 
-    // loop through each family member and push() the
+    // loop through each included family member and push() the
     // member's randomly-generated costs into the FamilyCosts object
     // for each family member
-      angular.forEach($scope.FamilyProfile, function(familyMember){
+      angular.forEach($scope.getIncludedFamilyMembers(), function(familyMember){
         console.log('Calculating simulated costs for '.concat(familyMember.name));
 
         // calculate randomly-generated costs for each family member
@@ -261,10 +270,10 @@ return SimulatedYear ;
 
 
   $scope.gridFamilyOptions = {
-          enableSorting: true,
+          enableSorting: false,
           columnDefs: [
             { name:'Name', field: 'name' },
-            { name:'Include', field: 'include' },
+            { name: 'include', displayName: 'Include?', type: 'boolean',cellTemplate: '<input type="checkbox" ng-model="row.entity.include">'},
             { name:'Age', field: 'age'},
             { name:'Visit Base', field: 'visitBase'},
             { name:'Sick Risk' , field: 'sickRisk'},
@@ -274,7 +283,7 @@ return SimulatedYear ;
         };
 
 $scope.gridPlanOptions = {
-        enableSorting: true,
+        enableSorting: false,
         columnDefs: [
           { name:'Plan Name', field: 'planName' },
           { name:'Premium', field: 'premiumFamily' },
