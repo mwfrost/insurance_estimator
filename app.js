@@ -19,14 +19,18 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
         "premiumFamily": 2279,
         "deductibleFamily": 6000,
         "maxOOPFamily": 11900,
-        "maxOOPFamilyIncludesPremium": false
+        "maxOOPFamilyIncludesPremium": false,
+        "coinsurance": 0.3,
+        "copay": 15
       },
       {
         "planName": "Silver Plan" ,
         "premiumFamily": 3526,
         "deductibleFamily": 3000,
         "maxOOPFamily": 6850,
-        "maxOOPFamilyIncludesPremium": false
+        "maxOOPFamilyIncludesPremium": false,
+        "coinsurance": 0.3,
+        "copay": 15
       }
     ];
 
@@ -283,9 +287,9 @@ return SimulatedYear ;
             { name:'Name', field: 'name' },
             { name: 'include', displayName: 'Include?', type: 'boolean',cellTemplate: '<input type="checkbox" ng-model="row.entity.include">'},
             { name:'Age', field: 'age'},
-            { name:'Visit Base', field: 'visitBase'},
-            { name:'Sick Risk' , field: 'sickRisk'},
-            { name:'Catastrophic Risk' , field:'catRisk'}
+            { name:'Visit Base', field: 'visitBase', cellFilter: 'currency'},
+            { name:'Sick Risk' , field: 'sickRisk',cellFilter: 'number: 2'},
+            { name:'Catastrophic Risk' , field:'catRisk',cellFilter: 'number: 2'}
           ],
           data : $scope.FamilyProfile
         };
@@ -294,10 +298,12 @@ $scope.gridPlanOptions = {
         enableSorting: false,
         columnDefs: [
           { name:'Plan Name', field: 'planName' },
-          { name:'Premium', field: 'premiumFamily' },
-          { name:'Deductible', field: 'deductibleFamily'},
-          { name:'Max OOP', field: 'maxOOPFamily'},
-          { name: 'maxOOPFamilyIncludesPremium', displayName: 'OOP Max Includes Premium', type: 'boolean',cellTemplate: '<input type="checkbox" ng-model="row.entity.maxOOPFamilyIncludesPremium">'}
+          { name:'Premium', field: 'premiumFamily' , cellFilter: 'currency'},
+          { name:'Deductible', field: 'deductibleFamily', cellFilter: 'currency'},
+          { name:'Max OOP', field: 'maxOOPFamily', cellFilter: 'currency'},
+          { name: 'maxOOPFamilyIncludesPremium', displayName: 'OOP Max Includes Premium', type: 'boolean',cellTemplate: '<input type="checkbox" ng-model="row.entity.maxOOPFamilyIncludesPremium">'},
+          { name: 'Coinsurance', field:'coinsurance',cellFilter: 'number: 2'},
+          { name: 'Copay', field:'copay',cellFilter: 'currency'}
         ],
         data : $scope.Plans
       };
