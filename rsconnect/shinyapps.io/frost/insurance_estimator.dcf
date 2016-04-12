@@ -1,9 +1,0 @@
-name: insurance_estimator
-account: frost
-server: shinyapps.io
-appId: 72102
-bundleId: 325094
-url: https://frost.shinyapps.io/insurance_estimator
-when: 1449302542.98186
-asMultiple: FALSE
-asStatic: FALSE
