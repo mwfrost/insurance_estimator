@@ -4,6 +4,10 @@
 angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtrl", function ($scope) {
 
     $scope.SimCount = 50;
+    $scope.meanSickCost = 2000;
+    $scope.sdevSickCost = 1000;
+    $scope.catCost = 75000;
+    $scope.maxIncludesPremium = false;
 
   //
   // Data Definition
@@ -13,13 +17,15 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
         "planName": "Bronze Plan" ,
         "premiumFamily": 2279,
         "deductibleFamily": 6000,
-        "maxOOPFamily": 11900
+        "maxOOPFamily": 11900,
+        "maxOOPFamilyIncludesPremium": false
       },
       {
         "planName": "Silver Plan" ,
         "premiumFamily": 3526,
         "deductibleFamily": 3000,
-        "maxOOPFamily": 6850
+        "maxOOPFamily": 6850,
+        "maxOOPFamilyIncludesPremium": false
       }
     ];
 
@@ -125,25 +131,30 @@ $scope.simulateYear = function () {
         console.log('Calculating simulated costs for '.concat(familyMember.name));
 
         // calculate randomly-generated costs for each family member
-        RandCosts = chance.n(chance.normal, $scope.SimCount, {mean: 5500, dev: 1000, fixed: 2}) ;
+        SickCosts = chance.n(chance.normal, $scope.SimCount, {
+          mean: $scope.meanSickCost, dev: $scope.sdevSickCost, fixed: 2
+        }) ;
 
-        // and weight them by the SickRisk and CatRisk factors
-        MemberCosts = RandCosts.map(function(_,i) {
-          return (RandCosts[i] * familyMember.sickRisk ) +
-          (RandCosts[i] * familyMember.catRisk ) +
+        // weight the costs by the SickRisk and CatRisk factors
+        MemberCosts = SickCosts.map(function(_,i) {
+          // cost of sick visits is the sickRisk index multiplied by the SickCost
+          // catastrophic costs are either catCost or zero,
+          // with the catRisk index weighting the 1 probability
+          return (SickCosts[i] * familyMember.sickRisk ) +
+          (chance.weighted([$scope.catCost, 0], [familyMember.catRisk, 1- familyMember.catRisk]) ) +
           familyMember.visitBase;
         });
-        console.log(MemberCosts);
+    //    console.log(MemberCosts);
         FamilyCosts.push({name: familyMember.name, costs: MemberCosts});
       }
     ); // end of loop through family members
-    console.log('Finished calculating FamilyCosts object');
+  //  console.log('Finished calculating FamilyCosts object');
 
     // For now, reduce the array of member-specific costs into family costs.
     // For each i in SimCount, iterate across all the familyMember objects m in FamilyCosts
     // and assign the total to FamilyAnnualCosts[i]
 
-    console.log('About to sum costs across family members');
+  //  console.log('About to sum costs across family members');
     FamilyAnnualCosts = new Array($scope.SimCount);
 
     for(var s = 0; s < $scope.SimCount; s++) {
@@ -155,36 +166,49 @@ $scope.simulateYear = function () {
       }
       FamilyAnnualCosts[s] = totalFamily;
     };
-    console.log('Finished reducing FamilyCosts object into FamilyAnnualCosts');
-    console.log(FamilyAnnualCosts);
+//    console.log('Finished reducing FamilyCosts object into FamilyAnnualCosts');
+//    console.log(FamilyAnnualCosts);
     // split each simulated year's variable costs into pre- and post-deductible
     PlanCostsPreDeductible = FamilyAnnualCosts.map(function(cost) {
       return (cost > plan.deductibleFamily ) ? plan.deductibleFamily : cost;
     });
-    console.log('PlanCostsPreDeductible:');
-    console.log(PlanCostsPreDeductible);
+//    console.log('PlanCostsPreDeductible:');
+//    console.log(PlanCostsPreDeductible);
 
     PlanCostsPostDeductible = FamilyAnnualCosts.map(function(cost) {
       return (cost > plan.deductibleFamily ) ? cost - plan.deductibleFamily : 0;
     });
-    console.log('PlanCostsPostDeductible:');
-    console.log(PlanCostsPostDeductible);
+//    console.log('PlanCostsPostDeductible:');
+//    console.log(PlanCostsPostDeductible);
 
     // For each year, add:
     // the annual premium
     // the pre-deductible costs
     // the post-deductible cost
-    PlanCostsGross = FamilyAnnualCosts.map(function(_,i) {
-      return PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i] + plan.premiumFamily;
+      // truncate at the plan.maxOOPFamily value if the OOP max includes the premium.
+    PlanCostsNet = FamilyAnnualCosts.map(function(_,i) {
+      // console.log('truncating cost at out of pocket maximum');
+      if(plan.maxOOPFamilyIncludesPremium){
+        // console.log(
+        //   'Comparing '.concat(plan.premiumFamily + PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]).concat(' to ').concat(plan.maxOOPFamily)
+        // );
+        cappedCost =
+          ((plan.premiumFamily + PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]) > plan.maxOOPFamily ) ?  plan.maxOOPFamily : plan.premiumFamily + PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i] ;
+        }
+      else {
+        // console.log(
+        //   'Comparing '.concat(PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]).concat(' to ').concat(plan.maxOOPFamily)
+        // );
+        cappedCost =
+          ((PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]) > plan.maxOOPFamily ) ?  plan.maxOOPFamily : (PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]) ;
+        cappedCost = cappedCost + plan.premiumFamily;
+      }
+      // console.log(cappedCost);
+      return cappedCost;
     });
 
-    // then truncate at the plan.maxOOPFamily value if the OOP max includes the deductible.
-    PlanCostsNet = PlanCostsGross.map(function(cost) {
-      return (cost > plan.maxOOPFamily ) ? plan.maxOOPFamily : cost;
-    });
-
-    console.log('After adding premium and capping at OOP maximum');
-    console.log(PlanCostsNet);
+  //  console.log('After adding premium and capping at OOP maximum');
+  //  console.log(PlanCostsNet);
     // 'this.' refers to the SimulatedYear object passed as an argument
     this.push({planname: plan.planName, costs: PlanCostsNet, costsPreDeductible: PlanCostsPreDeductible, costsPostDeductible: PlanCostsPostDeductible});
   }, SimulatedYear);
@@ -235,6 +259,7 @@ return SimulatedYear ;
   };
 
 
+
   $scope.gridFamilyOptions = {
           enableSorting: true,
           columnDefs: [
@@ -254,12 +279,28 @@ $scope.gridPlanOptions = {
           { name:'Plan Name', field: 'planName' },
           { name:'Premium', field: 'premiumFamily' },
           { name:'Deductible', field: 'deductibleFamily'},
-          { name:'Max OOP', field: 'maxOOPFamily'}
+          { name:'Max OOP', field: 'maxOOPFamily'},
+          { name: 'maxOOPFamilyIncludesPremium', displayName: 'OOP Max Includes Premium', type: 'boolean',cellTemplate: '<input type="checkbox" ng-model="row.entity.maxOOPFamilyIncludesPremium">'}
         ],
         data : $scope.Plans
       };
 
+$scope.$on('uiGridEventEndCellEdit', function (data) {
 
+    $scope.FamilyProfile = $scope.gridFamilyOptions.data;
+    $scope.Plans = $scope.gridPlanOptions.data;
+
+    console.log('Recalculating after edit to family or plan');
+    console.log('New FamilyProfile object');
+    console.log($scope.FamilyProfile);
+    console.log('New Plans object');
+    console.log($scope.Plans);
+
+    $scope.SimulatedYear = $scope.simulateYear();
+    $scope.costcurves =
+      $scope.getPlanCosts();
+    ;
+});
 
 
 });
