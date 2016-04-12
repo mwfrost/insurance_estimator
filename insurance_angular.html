@@ -12,10 +12,10 @@
 </head>
 <body>
 <div class="container">
-<h1>Insurance Policy Comparison</h1>
 <div ng-app="app">
   <div class="row"  ng-controller="InsCtrl">
     <div class="row">
+      <h1>Insurance Policy Comparison</h1>
     <div class="col-lg-8 col-sm-12">
       <h4>Family Characteristics</h4>
       <div id="gridFamily" ui-grid="gridFamilyOptions" ui-grid-edit class="grid"></div>
@@ -34,6 +34,14 @@
         chart-click="onClick">
       </canvas>
     </div>
+
+    <h4>Summary of Results:</h4>
+    <ul ng-repeat="year in SimulatedYear">
+      <li><strong>{{year.planname}}</strong> </li>
+    <li >
+      median: {{year.medianCost | currency}}
+    </li>
+    </ul>
     <h4>Assumptions</h4>
       <p>Iterations: {{SimCount}}</p>
       <p>Sick Visit Cost Basis: {{meanSickCost | currency}} </p>
@@ -48,10 +56,16 @@
     <div id="gridPlans" ui-grid="gridPlanOptions" ui-grid-edit ui-grid-row-edit class="grid"></div>
   </div>
   </div>
-</div>
-</div>
 
+  <div class="row">
+  <h2>Using the Insurance Estimator</h2>
+  <p>Play around with the input variables, on both the family table and the plan table, and see how the results change. The "Visit Base" column is the expected well visit cost for each member of the family. The Sick Rick and Catastrophic Risk indexes are, respectively, factors used to simulate the probability each member will require sick visits or catastrophically expensive services that max out the out of pocket ceiling. Sick visit expenses are calculated by generating a "Sick Visit Cost" number (based on a normal distribution around the "Sick Visit Cost Basis" mean of {{meanSickCost}} ) and multiplying that by the "Sick Risk" index. The catastrophic risk is the percentage that each member will incur {{catCost | currency}} in expenses. </p>
+  <p>If you change the checkbox to include or exclude a family member, or to change whether a plan's OOP maximum covers the premiums, click in another grid cell to refresh the results.
+  </p>
+  </div>
 
+</div> <!-- InsCtrl -->
+</div> <!-- app -->
 </div> <!-- container -->
 </body>
 

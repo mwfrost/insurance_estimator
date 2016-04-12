@@ -3,7 +3,9 @@
 
 angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtrl", function ($scope) {
 
-    $scope.SimCount = 50;
+    $scope.SimCount = 100;
+    $scope.simTickInterval = 20;
+
     $scope.meanSickCost = 2000;
     $scope.sdevSickCost = 1000;
     $scope.catCost = 75000;
@@ -52,7 +54,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                       "include": true,
                       "age": 40,
                       "visitBase": 150,
-                      "sickRisk": 0.1,
+                      "sickRisk": 0.2,
                       "catRisk": 0.01
                     },
                     {
@@ -60,7 +62,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                       "include": true,
                       "age": 40,
                       "visitBase": 150,
-                      "sickRisk": 0.1,
+                      "sickRisk": 0.2,
                       "catRisk": 0.01
                     },
                     {
@@ -68,7 +70,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                       "include": true,
                       "age": 17,
                       "visitBase": 150,
-                      "sickRisk": 0.1,
+                      "sickRisk": 0.2,
                       "catRisk": 0.01
                     },
                     {
@@ -76,7 +78,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                       "include": true,
                       "age": 15,
                       "visitBase": 150,
-                      "sickRisk": 0.1,
+                      "sickRisk": 0.2,
                       "catRisk": 0.01
                     },
                     {
@@ -84,7 +86,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                       "include": false,
                       "age": 13,
                       "visitBase": 150,
-                      "sickRisk": 0.1,
+                      "sickRisk": 0.2,
                       "catRisk": 0.01
                     },
                     {
@@ -92,7 +94,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                       "include": false,
                       "age": 11,
                       "visitBase": 150,
-                      "sickRisk": 0.1,
+                      "sickRisk": 0.2,
                       "catRisk": 0.01
                     },
                     {
@@ -100,7 +102,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                       "include": false,
                       "age": 9,
                       "visitBase": 150,
-                      "sickRisk": 0.1,
+                      "sickRisk": 0.2,
                       "catRisk": 0.01
                     },
                     {
@@ -108,7 +110,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                       "include": false,
                       "age": 7,
                       "visitBase": 150,
-                      "sickRisk": 0.1,
+                      "sickRisk": 0.2,
                       "catRisk": 0.01
                     }
 
@@ -216,10 +218,17 @@ $scope.simulateYear = function () {
       return cappedCost;
     });
 
-  //  console.log('After adding premium and capping at OOP maximum');
-  //  console.log(PlanCostsNet);
+  //  console.log('About to summarize costs');
+      // calculate the median cost
+      PlanCostsNet.sort(function(a, b) {
+        return a - b;
+      });
+      lowMiddle = Math.floor((PlanCostsNet.length - 1) / 2);
+      highMiddle = Math.ceil((PlanCostsNet.length - 1) / 2);
+      median = (PlanCostsNet[lowMiddle] + PlanCostsNet[highMiddle]) / 2;
+
     // 'this.' refers to the SimulatedYear object passed as an argument
-    this.push({planname: plan.planName, costs: PlanCostsNet, costsPreDeductible: PlanCostsPreDeductible, costsPostDeductible: PlanCostsPostDeductible});
+    this.push({planname: plan.planName, costs: PlanCostsNet, costsPreDeductible: PlanCostsPreDeductible, costsPostDeductible: PlanCostsPostDeductible, medianCost: median});
   }, SimulatedYear);
 
   // within each plan option, count the results by cost bin
@@ -250,7 +259,6 @@ return SimulatedYear ;
   // A formatter for counts.
   var formatCount = d3.format(",.0f");
 
-  $scope.simTickInterval = 10;
   $scope.freqlabels = Array.apply(0, Array($scope.SimCount)).map(function (x, y) {
     return (y + 1)% $scope.simTickInterval?'':(y + 1);
   });
