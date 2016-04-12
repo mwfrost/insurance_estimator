@@ -208,14 +208,14 @@ $scope.simulateYear = function () {
         //   'Comparing '.concat(plan.premiumFamily + PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]).concat(' to ').concat(plan.maxOOPFamily)
         // );
         cappedCost =
-          ((plan.premiumFamily + PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]) > plan.maxOOPFamily ) ?  plan.maxOOPFamily : plan.premiumFamily + PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i] ;
+          ((plan.premiumFamily + PlanCostsPreDeductible[i] + (PlanCostsPostDeductible[i] * (1 - plan.coinsurance)) ) > plan.maxOOPFamily ) ?  plan.maxOOPFamily : plan.premiumFamily + PlanCostsPreDeductible[i] + (PlanCostsPostDeductible[i] * (1 - plan.coinsurance)) ;
         }
       else {
         // console.log(
         //   'Comparing '.concat(PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]).concat(' to ').concat(plan.maxOOPFamily)
         // );
         cappedCost =
-          ((PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]) > plan.maxOOPFamily ) ?  plan.maxOOPFamily : (PlanCostsPreDeductible[i] + PlanCostsPostDeductible[i]) ;
+          ((PlanCostsPreDeductible[i] + (PlanCostsPostDeductible[i] * (1 - plan.coinsurance))) > plan.maxOOPFamily ) ?  plan.maxOOPFamily : (PlanCostsPreDeductible[i] + (PlanCostsPostDeductible[i] * (1 - plan.coinsurance))) ;
         cappedCost = cappedCost + plan.premiumFamily;
       }
       // console.log(cappedCost);
