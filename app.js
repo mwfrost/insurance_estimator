@@ -3,7 +3,7 @@
 
 angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtrl", function ($scope) {
 
-    $scope.SimCount = 100;
+    $scope.SimCount = 500;
     $scope.simTickInterval = 20;
 
     $scope.meanSickCost = 2000;
@@ -13,10 +13,12 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
   //
   // Data Definition
   //
+
+  // TODO: get plans from API source
     $scope.Plans = [
       {
-        "planName": "Bronze Plan" ,
-        "premiumFamily": 2279,
+        "planName": "Bronze Plan A" ,
+        "premiumFamily": 1392,
         "deductibleFamily": 6000,
         "maxOOPFamily": 11900,
         "maxOOPFamilyIncludesPremium": false,
@@ -24,10 +26,37 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
         "copay": 15
       },
       {
+        "planName": "Bronze Plan B" ,
+        "premiumFamily": 777,
+        "deductibleFamily": 6000,
+        "maxOOPFamily": 11900,
+        "maxOOPFamilyIncludesPremium": false,
+        "coinsurance": 0.3,
+        "copay": 15
+      },
+      {
+        "planName": "Bronze+ Plan" ,
+        "premiumFamily": 2922,
+        "deductibleFamily": 4500,
+        "maxOOPFamily": 7150,
+        "maxOOPFamilyIncludesPremium": false,
+        "coinsurance": 0.3,
+        "copay": 15
+      },
+      {
         "planName": "Silver Plan" ,
-        "premiumFamily": 3526,
+        "premiumFamily": 4296,
         "deductibleFamily": 3000,
-        "maxOOPFamily": 6850,
+        "maxOOPFamily": 7150,
+        "maxOOPFamilyIncludesPremium": false,
+        "coinsurance": 0.3,
+        "copay": 15
+      },
+      {
+        "planName": "Gold Plan" ,
+        "premiumFamily": 9065,
+        "deductibleFamily": 1200,
+        "maxOOPFamily": 7000,
         "maxOOPFamilyIncludesPremium": false,
         "coinsurance": 0.3,
         "copay": 15
@@ -87,7 +116,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                     },
                     {
                       "name": "Child 3" ,
-                      "include": false,
+                      "include": true,
                       "age": 13,
                       "visitBase": 150,
                       "sickRisk": 0.2,
@@ -95,7 +124,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                     },
                     {
                       "name": "Child 4" ,
-                      "include": false,
+                      "include": true,
                       "age": 11,
                       "visitBase": 150,
                       "sickRisk": 0.2,
@@ -103,7 +132,7 @@ angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtr
                     },
                     {
                       "name": "Child 5" ,
-                      "include": false,
+                      "include": true,
                       "age": 9,
                       "visitBase": 150,
                       "sickRisk": 0.2,

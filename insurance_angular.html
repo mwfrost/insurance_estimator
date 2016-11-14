@@ -21,7 +21,7 @@
       <div id="gridFamily" ui-grid="gridFamilyOptions" ui-grid-edit class="grid"></div>
     </div>
 
-    <div class="col-lg-4 col-sm-12">
+    <div class="col-lg-8 col-sm-12">
       <h4>Cost Scenario Results: {{SimCount}} Iterations</h4>
       <div id="line">
       <canvas
@@ -32,7 +32,12 @@
         chart-legend="true"
         chart-series="series"
         chart-click="onClick",
-        chart-options="{pointDot: false}">
+        chart-options="{pointDot: false, datasetFill: false, yAxes: [{
+						ticks: {
+							beginAtZero:true
+						}
+					}]
+			}">
       </canvas>
     </div>
 
