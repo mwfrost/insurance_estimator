@@ -1,10 +1,10 @@
 
 
 
-angular.module("app", ["chart.js","ui.grid", "ui.grid.edit"]).controller("InsCtrl", function ($scope) {
+angular.module("app", ["ui.grid", "ui.grid.edit","chart.js"]).controller("InsCtrl", function ($scope) {
 
     $scope.SimCount = 500;
-    $scope.simTickInterval = 20;
+    $scope.simTickInterval = 50;
 
     $scope.meanSickCost = 2000;
     $scope.sdevSickCost = 1000;
@@ -259,9 +259,11 @@ $scope.simulateYear = function () {
       lowMiddle = Math.floor((PlanCostsNet.length - 1) / 2);
       highMiddle = Math.ceil((PlanCostsNet.length - 1) / 2);
       median = (PlanCostsNet[lowMiddle] + PlanCostsNet[highMiddle]) / 2;
+      max = PlanCostsNet[PlanCostsNet.length - 1] ;
+      tailrisk = max - median;
 
     // 'this.' refers to the SimulatedYear object passed as an argument
-    this.push({planname: plan.planName, costs: PlanCostsNet, costsPreDeductible: PlanCostsPreDeductible, costsPostDeductible: PlanCostsPostDeductible, medianCost: median});
+    this.push({planname: plan.planName, costs: PlanCostsNet, costsPreDeductible: PlanCostsPreDeductible, costsPostDeductible: PlanCostsPostDeductible, medianCost: median, maxCost: max, tailRisk: tailrisk});
   }, SimulatedYear);
 
   // within each plan option, count the results by cost bin
@@ -289,8 +291,6 @@ return SimulatedYear ;
         return PlanCosts;
     };
 
-  // A formatter for counts.
-  var formatCount = d3.format(",.0f");
 
   $scope.freqlabels = Array.apply(0, Array($scope.SimCount)).map(function (x, y) {
     return (y + 1)% $scope.simTickInterval?'':(y + 1);
@@ -307,8 +307,6 @@ return SimulatedYear ;
   $scope.onClick = function (points, evt) {
     //
   };
-
-
 
   $scope.gridFamilyOptions = {
           enableSorting: false,
@@ -329,13 +327,19 @@ $scope.gridPlanOptions = {
           { name:'Plan Name', field: 'planName' },
           { name:'Premium', field: 'premiumFamily' , cellFilter: 'currency'},
           { name:'Deductible', field: 'deductibleFamily', cellFilter: 'currency'},
-          { name:'Max OOP', field: 'maxOOPFamily', cellFilter: 'currency'},
-          { name: 'maxOOPFamilyIncludesPremium', displayName: 'OOP Max Includes Premium', type: 'boolean',cellTemplate: '<input type="checkbox" ng-model="row.entity.maxOOPFamilyIncludesPremium">'},
-          { name: 'Coinsurance', field:'coinsurance',cellFilter: 'number: 2'},
-          { name: 'Copay', field:'copay',cellFilter: 'currency'}
+          { name:'Max OOP', field: 'maxOOPFamily', cellFilter: 'currency'}
+          //,
+          // { name: 'maxOOPFamilyIncludesPremium', displayName: 'OOP Max Includes Premium', type: 'boolean',cellTemplate: '<input type="checkbox" ng-model="row.entity.maxOOPFamilyIncludesPremium">'},
+        //  { name: 'Coinsurance', field:'coinsurance',cellFilter: 'number: 2'},
+        //  { name: 'Copay', field:'copay',cellFilter: 'currency'}
         ],
         data : $scope.Plans
       };
+
+$scope.chartOptions =       {
+          legend: {display: true}, pointDot: false, datasetFill: false
+        };
+
 
 $scope.$on('uiGridEventEndCellEdit', function (data) {
 

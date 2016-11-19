@@ -2,10 +2,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<link rel="stylesheet" href="bower_components/angular-chart.js/dist/angular-chart.css" />
+
+<meta charset="utf-8">  <!-- it's important for d3.js -->
+
 <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
 <link rel="styleSheet" href="bower_components/angular-ui-grid/ui-grid.min.css"/>
+<link rel="styleSheet" href="bower_components/angular-chart.js/dist/angular-chart.css"/>
 
+
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/Chart.js/Chart.js"></script>
+<script src="bower_components/angular-chart.js/angular-chart.js"></script>
+
+<script src="bower_components/angular-ui-grid/ui-grid.min.js"></script>
+<script type="text/javascript" src="bower_components/chance/chance.js"></script>
+<script src="./app.js"></script>
 
 <title>Insurance Policy Comparison Tool</title>
 
@@ -16,52 +27,58 @@
   <div class="row"  ng-controller="InsCtrl">
     <div class="row">
       <h1>Insurance Policy Comparison</h1>
-    <div class="col-lg-8 col-sm-12">
+    <div class="col-lg-6 col-sm-12">
       <h4>Family Characteristics</h4>
       <div id="gridFamily" ui-grid="gridFamilyOptions" ui-grid-edit class="grid"></div>
     </div>
 
-    <div class="col-lg-8 col-sm-12">
-      <h4>Cost Scenario Results: {{SimCount}} Iterations</h4>
-      <div id="line">
-      <canvas
-        id="line"
-        class="chart chart-line"
-        chart-data="costcurves"
-        chart-labels="freqlabels"
-        chart-legend="true"
-        chart-series="series"
-        chart-click="onClick",
-        chart-options="{pointDot: false, datasetFill: false, yAxes: [{
-						ticks: {
-							beginAtZero:true
-						}
-					}]
-			}">
-      </canvas>
-    </div>
 
-    <h4>Summary of Results:</h4>
-    <ul ng-repeat="year in SimulatedYear">
-      <li><strong>{{year.planname}}</strong> </li>
-    <li >
-      median: {{year.medianCost | currency}}
-    </li>
-    </ul>
-    <h4>Assumptions</h4>
-      <p>Iterations: {{SimCount}}</p>
-      <p>Sick Visit Cost Basis: {{meanSickCost | currency}} </p>
-    </div>
-
-    </div>
-  <div class="row">
-    <div class="col-lg-12 col-sm-12">
+    <div class="col-lg-6 col-sm-12">
     <h4>Plan Characteristics</h4>
     <p>{{planList}}</p>
 
     <div id="gridPlans" ui-grid="gridPlanOptions" ui-grid-edit ui-grid-row-edit class="grid"></div>
   </div>
+</div> <!-- row containing input grids -->
+
+  <div class="row">
+    <div class="col-lg-3 col-sm-12">
+      <h4>Assumptions</h4>
+        <p>Iterations: {{SimCount}}</p>
+        <p>Sick Visit Cost Basis: {{meanSickCost | currency}} </p>
+
+      <h4>Summary of Results:</h4>
+      <ul ng-repeat="year in SimulatedYear">
+        <li><strong>{{year.planname}}</strong> </li>
+      <li >
+        Median: {{year.medianCost | currency}}
+      </li>
+      <li >
+        Max: {{year.maxCost | currency}}
+      </li>
+      <li >
+        Tail Risk (max - median): {{year.maxCost - year.medianCost | currency}}
+      </li>
+      </ul>
+      </div>
+
+      <div class="col-lg-8 col-sm-12">
+
+    <h4>Cost Scenario Results: {{SimCount}} Iterations</h4>
+    <div id="line">
+    <canvas
+      id="line"
+      class="chart chart-line"
+      chart-data="costcurves"
+      chart-labels="freqlabels"
+      chart-legend="true"
+      chart-series="series"
+      chart-click="onClick",
+      chart-options="chartOptions">
+    </canvas>
+    </div>
   </div>
+</div>
 
   <div class="row">
   <h2>Using the Insurance Estimator</h2>
@@ -70,17 +87,12 @@
   </p>
   </div>
 
+  </div>
+
 </div> <!-- InsCtrl -->
 </div> <!-- app -->
 </div> <!-- container -->
 </body>
 
-<script src="bower_components/angular/angular.min.js"></script>
-<script src="bower_components/angular-ui-grid/ui-grid.min.js"></script>
-<script src="bower_components/Chart.js/Chart.min.js"></script>
-<script src="bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
-<script src="bower_components/d3/d3.js"></script>
-<script type="text/javascript" src="bower_components/chance/chance.js"></script>
-<script src="./app.js"></script>
 
 </html>
